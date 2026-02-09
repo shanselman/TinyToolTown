@@ -1,0 +1,160 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout title="About — Tiny Tool Town 🏘️" description="What is Tiny Tool Town? A manifesto for stupid-delightful software.">
+  <Header />
+
+  <main class="container">
+    <article class="about-page">
+      <h1>About Tiny Tool Town 🏘️</h1>
+
+      <div class="manifesto">
+        <blockquote>
+          "Vibe coding is the GeoCities of the AI era."
+        </blockquote>
+
+        <p>
+          Remember GeoCities? That glorious, chaotic, beautiful mess of personal websites?
+          Everyone had one. Most of them were terrible. <strong>All of them were wonderful.</strong>
+        </p>
+
+        <p>
+          We're living in that moment again. AI tools have made it possible for anyone to build software.
+          People are creating tiny, weird, wonderful tools — not because there's a market for them,
+          but because they <em>want them to exist</em>.
+        </p>
+
+        <p>
+          <strong>Tiny Tool Town</strong> is a place to celebrate those creations.
+        </p>
+
+        <h2>What belongs here?</h2>
+
+        <p>
+          Tools that are <strong>free, fun, and open source</strong>. The kind of thing you'd build
+          for yourself on a Saturday afternoon. The kind of thing you'd show your friends and they'd say
+          "that's stupid" and then immediately ask for the link.
+        </p>
+
+        <ul>
+          <li>🔧 <strong>Tiny</strong> — Does one thing, does it well</li>
+          <li>✨ <strong>Delightful</strong> — Makes you smile</li>
+          <li>🆓 <strong>Free</strong> — Open source, free to use</li>
+          <li>❤️ <strong>Made with love</strong> — Built because someone cared</li>
+        </ul>
+
+        <h2>What doesn't belong here?</h2>
+
+        <p>
+          Enterprise SaaS products. Paid tools with "free tiers." Anything with a pricing page.
+          This isn't Product Hunt. This is the neighborhood.
+        </p>
+
+        <h2>How does it work?</h2>
+
+        <p>
+          Tiny Tool Town is powered entirely by GitHub. The site is static — no servers, no databases,
+          no auth. Every tool listing is a markdown file in
+          <a href="https://github.com/shanselman/TinyToolTown" target="_blank" rel="noopener">the repository</a>.
+        </p>
+
+        <p>
+          Want to add your tool? <a href="/submit/">Submit a pull request</a>. It's that simple.
+          The community reviews it, and your tool gets a little house in the town. 🏠
+        </p>
+
+        <h2>Who made this?</h2>
+
+        <p>
+          Tiny Tool Town was created by
+          <a href="https://hanselman.com" target="_blank" rel="noopener">Scott Hanselman</a>
+          after a conversation with
+          <a href="https://www.youtube.com/@hankgreen" target="_blank" rel="noopener">Hank Green</a>
+          about vibe coding, the spirit of GeoCities, and the joy of making things just because you can.
+        </p>
+
+        <p>
+          Built with <a href="https://astro.build" target="_blank" rel="noopener">Astro</a>,
+          hosted on <a href="https://pages.github.com" target="_blank" rel="noopener">GitHub Pages</a>,
+          and maintained by the community. ✨
+        </p>
+      </div>
+    </article>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .about-page {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2.5rem 0 3rem;
+  }
+
+  .about-page h1 {
+    font-size: 2.25rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+  }
+
+  .manifesto {
+    line-height: 1.8;
+    color: var(--color-text-muted);
+    font-size: 1.05rem;
+  }
+
+  .manifesto p {
+    margin-bottom: 1.25rem;
+  }
+
+  .manifesto strong {
+    color: var(--color-text);
+  }
+
+  .manifesto em {
+    color: var(--color-primary);
+    font-style: italic;
+  }
+
+  blockquote {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+    border-left: 4px solid var(--color-primary);
+    padding-left: 1.5rem;
+    margin: 2rem 0;
+    font-style: italic;
+  }
+
+  .manifesto h2 {
+    color: var(--color-text);
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 2rem 0 1rem;
+  }
+
+  .manifesto ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .manifesto li {
+    padding: 0.5rem 0;
+    font-size: 1.05rem;
+  }
+
+  .manifesto a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .manifesto a:hover {
+    color: var(--color-primary);
+  }
+</style>

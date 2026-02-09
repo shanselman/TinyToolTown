@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout title="404 — You wandered off the map! 🗺️">
+  <Header />
+
+  <main class="container">
+    <section class="not-found">
+      <div class="nf-emoji">🗺️</div>
+      <h1>You wandered off the map!</h1>
+      <p>This corner of the town doesn't exist yet. Maybe someone should build a tool for that.</p>
+      <div class="nf-actions">
+        <a href="/" class="btn btn-primary">Back to Town 🏘️</a>
+        <a href="/tools/" class="btn btn-secondary">Browse Tools</a>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .not-found {
+    text-align: center;
+    padding: 5rem 0;
+  }
+
+  .nf-emoji {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+
+  .not-found h1 {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 0.75rem;
+  }
+
+  .not-found p {
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+
+  .nf-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary {
+    background: var(--color-primary);
+    color: var(--color-bg);
+  }
+
+  .btn-primary:hover {
+    background: #ffa033;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(255, 137, 6, 0.4);
+    color: var(--color-bg);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--color-text);
+    border: 2px solid var(--color-border);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+</style>

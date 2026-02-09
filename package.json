@@ -1,0 +1,14 @@
+{
+  "name": "tiny-tool-town",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@rollup/rollup-win32-x64-msvc": "^4.57.1",
+    "astro": "^5.2.0"
+  }
+}

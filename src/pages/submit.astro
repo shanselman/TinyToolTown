@@ -1,0 +1,357 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout title="Submit a Tool — Tiny Tool Town 🏘️" description="Add your tiny tool to the town! Submit via GitHub PR or Issue.">
+  <Header />
+
+  <main class="container">
+    <section class="submit-page">
+      <h1>Submit Your Tool ✨</h1>
+      <p class="subtitle">Got a tiny tool the world needs to see? Add it to the town!</p>
+
+      <div class="methods">
+        <!-- Method 1: PR -->
+        <div class="method-card primary">
+          <div class="method-header">
+            <span class="method-icon">🛠️</span>
+            <h2>Option 1: Pull Request</h2>
+            <span class="method-badge">Recommended</span>
+          </div>
+          <p>Fork the repo, add a markdown file, submit a PR. You know the drill.</p>
+
+          <div class="steps">
+            <div class="step">
+              <span class="step-num">1</span>
+              <div>
+                <strong>Fork the repo</strong>
+                <p><a href="https://github.com/shanselman/TinyToolTown/fork" target="_blank" rel="noopener">github.com/shanselman/TinyToolTown</a></p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step-num">2</span>
+              <div>
+                <strong>Create a new file</strong>
+                <p>Add <code>src/content/tools/your-tool-name.md</code></p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step-num">3</span>
+              <div>
+                <strong>Use this template</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span>your-tool-name.md</span>
+              <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('template-code').textContent || '')">📋 Copy</button>
+            </div>
+            <pre id="template-code"><code>---
+name: "Your Tool Name"
+tagline: "A one-line description of what it does"
+author: "Your Name"
+author_github: "your-github-username"
+github_url: "https://github.com/you/your-tool"
+website_url: "https://your-tool-demo.com"
+tags: ["cli", "fun", "tiny"]
+language: "Python"
+license: "MIT"
+date_added: "2026-02-09"
+featured: false
+---
+
+Write a few sentences about your tool here.
+What does it do? Why did you build it?
+Why is it delightful?</code></pre>
+          </div>
+
+          <div class="step">
+            <span class="step-num">4</span>
+            <div>
+              <strong>Submit your PR</strong>
+              <p>We'll review it and welcome your tool to the town! 🏘️</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Method 2: Issue -->
+        <div class="method-card">
+          <div class="method-header">
+            <span class="method-icon">📝</span>
+            <h2>Option 2: GitHub Issue</h2>
+          </div>
+          <p>Not comfortable with PRs? No worries! Just fill out a quick form and we'll add it for you.</p>
+          <a href="https://github.com/shanselman/TinyToolTown/issues/new?template=submit-tool.yml" class="btn btn-secondary" target="_blank" rel="noopener">
+            Open an Issue →
+          </a>
+        </div>
+      </div>
+
+      <!-- Guidelines -->
+      <div class="guidelines">
+        <h2>What makes a great Tiny Tool? 🤔</h2>
+        <div class="guideline-grid">
+          <div class="guideline">
+            <span class="gl-icon">✅</span>
+            <div>
+              <strong>Free & Open Source</strong>
+              <p>Source code on GitHub, free to use</p>
+            </div>
+          </div>
+          <div class="guideline">
+            <span class="gl-icon">✅</span>
+            <div>
+              <strong>Tiny & Focused</strong>
+              <p>Does one thing and does it well</p>
+            </div>
+          </div>
+          <div class="guideline">
+            <span class="gl-icon">✅</span>
+            <div>
+              <strong>Delightful</strong>
+              <p>Makes you smile, even if it's silly</p>
+            </div>
+          </div>
+          <div class="guideline">
+            <span class="gl-icon">✅</span>
+            <div>
+              <strong>Made with Love</strong>
+              <p>Built because you wanted it to exist</p>
+            </div>
+          </div>
+          <div class="guideline">
+            <span class="gl-icon">❌</span>
+            <div>
+              <strong>Not enterprise SaaS</strong>
+              <p>No paid products or freemium traps</p>
+            </div>
+          </div>
+          <div class="guideline">
+            <span class="gl-icon">❌</span>
+            <div>
+              <strong>Not abandoned</strong>
+              <p>Should work and have recent activity</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .submit-page {
+    padding: 2.5rem 0 3rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .submit-page h1 {
+    font-size: 2.25rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .methods {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .method-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+  }
+
+  .method-card.primary {
+    border-color: rgba(255, 137, 6, 0.3);
+  }
+
+  .method-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .method-icon { font-size: 1.5rem; }
+
+  .method-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .method-badge {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    background: var(--color-primary);
+    color: var(--color-bg);
+    border-radius: 50px;
+    font-weight: 600;
+  }
+
+  .method-card > p {
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    width: 28px;
+    height: 28px;
+    background: var(--color-primary);
+    color: var(--color-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .step p {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.2rem;
+  }
+
+  .step code {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+
+  .code-block {
+    background: #0d0c14;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+
+  .copy-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: inherit;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-text);
+  }
+
+  .code-block pre {
+    padding: 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .code-block code {
+    color: var(--color-green);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--color-text);
+    border: 2px solid var(--color-border);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    transform: translateY(-2px);
+  }
+
+  .guidelines h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .guideline-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+
+  .guideline {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    padding: 1rem;
+    background: var(--color-bg-card);
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+  }
+
+  .gl-icon { font-size: 1.25rem; flex-shrink: 0; }
+
+  .guideline strong {
+    display: block;
+    margin-bottom: 0.15rem;
+  }
+
+  .guideline p {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+</style>

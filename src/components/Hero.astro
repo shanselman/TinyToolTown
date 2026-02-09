@@ -1,0 +1,186 @@
+---
+---
+
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-sparkles">
+      <span class="sparkle s1">✨</span>
+      <span class="sparkle s2">⭐</span>
+      <span class="sparkle s3">✨</span>
+      <span class="sparkle s4">💫</span>
+      <span class="sparkle s5">⭐</span>
+    </div>
+    <div class="hero-town">
+      <span class="building">🏠</span>
+      <span class="building">🏡</span>
+      <span class="building">🏘️</span>
+      <span class="building">🏠</span>
+      <span class="building">🏡</span>
+    </div>
+    <h1 class="hero-title">
+      Welcome to <span class="gradient-text">Tiny Tool Town</span>
+    </h1>
+    <p class="hero-subtitle">
+      A place for <strong>stupid-delightful</strong> tools made with love.<br>
+      Free, fun & open source. Made for an audience of one.
+    </p>
+    <div class="hero-cta">
+      <a href="/tools/" class="btn btn-primary">Browse the Town 🏘️</a>
+      <a href="/submit/" class="btn btn-secondary">Submit Your Tool ✨</a>
+    </div>
+    <p class="hero-manifesto">
+      Vibe coding is the GeoCities of the AI era — and this is the neighborhood.
+    </p>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding: 4rem 0 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 50%, rgba(255, 137, 6, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(61, 169, 252, 0.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-sparkles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .sparkle {
+    position: absolute;
+    animation: sparkle-float 4s ease-in-out infinite;
+    font-size: 1.2rem;
+    opacity: 0.6;
+  }
+
+  .s1 { top: 10%; left: 15%; animation-delay: 0s; }
+  .s2 { top: 20%; right: 20%; animation-delay: 0.8s; }
+  .s3 { top: 60%; left: 10%; animation-delay: 1.6s; }
+  .s4 { top: 40%; right: 10%; animation-delay: 2.4s; }
+  .s5 { bottom: 10%; left: 30%; animation-delay: 3.2s; }
+
+  @keyframes sparkle-float {
+    0%, 100% { transform: translateY(0) scale(1); opacity: 0.4; }
+    50% { transform: translateY(-15px) scale(1.2); opacity: 0.8; }
+  }
+
+  .hero-town {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .building {
+    display: inline-block;
+    animation: building-pop 0.6s ease-out backwards;
+  }
+
+  .building:nth-child(1) { animation-delay: 0.1s; }
+  .building:nth-child(2) { animation-delay: 0.2s; }
+  .building:nth-child(3) { animation-delay: 0.3s; font-size: 3rem; }
+  .building:nth-child(4) { animation-delay: 0.4s; }
+  .building:nth-child(5) { animation-delay: 0.5s; }
+
+  @keyframes building-pop {
+    from { transform: translateY(20px) scale(0); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.2rem;
+    color: var(--color-text-muted);
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  .hero-subtitle strong {
+    color: var(--color-primary);
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.75rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary {
+    background: var(--color-primary);
+    color: var(--color-bg);
+  }
+
+  .btn-primary:hover {
+    background: #ffa033;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(255, 137, 6, 0.4);
+    color: var(--color-bg);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--color-text);
+    border: 2px solid var(--color-border);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    transform: translateY(-2px);
+  }
+
+  .hero-manifesto {
+    font-style: italic;
+    color: var(--color-text-muted);
+    opacity: 0.7;
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 640px) {
+    .hero { padding: 2.5rem 0 2rem; }
+    .hero-town { font-size: 2rem; }
+    .building:nth-child(3) { font-size: 2.5rem; }
+    .hero-subtitle { font-size: 1.05rem; }
+  }
+</style>

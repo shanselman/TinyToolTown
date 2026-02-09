@@ -1,0 +1,207 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+import ToolCard from '../components/ToolCard.astro';
+import { getCollection } from 'astro:content';
+
+const allTools = await getCollection('tools');
+const featuredTools = allTools.filter(t => t.data.featured);
+const latestTools = allTools
+  .sort((a, b) => new Date(b.data.date_added).getTime() - new Date(a.data.date_added).getTime())
+  .slice(0, 8);
+---
+
+<BaseLayout>
+  <Header />
+  <Hero />
+
+  <main class="container">
+    <!-- Featured Tools -->
+    {featuredTools.length > 0 && (
+      <section class="section">
+        <div class="section-header">
+          <h2 class="section-title">⭐ Featured Tools</h2>
+          <p class="section-subtitle">The best of the tiny</p>
+        </div>
+        <div class="tool-grid featured-grid">
+          {featuredTools.map(tool => (
+            <ToolCard
+              name={tool.data.name}
+              slug={tool.id.replace(/\.md$/, '')}
+              tagline={tool.data.tagline}
+              author={tool.data.author}
+              author_github={tool.data.author_github}
+              tags={tool.data.tags}
+              language={tool.data.language}
+              featured={tool.data.featured}
+              thumbnail={tool.data.thumbnail}
+            />
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Latest Tools -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">🆕 Latest Additions</h2>
+        <a href="/tools/" class="view-all">View all →</a>
+      </div>
+      <div class="tool-grid">
+        {latestTools.map(tool => (
+          <ToolCard
+            name={tool.data.name}
+            slug={tool.id.replace(/\.md$/, '')}
+            tagline={tool.data.tagline}
+            author={tool.data.author}
+            author_github={tool.data.author_github}
+            tags={tool.data.tags}
+            language={tool.data.language}
+            featured={tool.data.featured}
+            thumbnail={tool.data.thumbnail}
+          />
+        ))}
+      </div>
+    </section>
+
+    <!-- What is this? -->
+    <section class="section manifesto-section">
+      <div class="manifesto-card">
+        <h2>What is this place? 🤔</h2>
+        <p>
+          Tiny Tool Town is a community showcase for <strong>free, fun, and open source tools</strong>.
+          These are the tools that are stupid and delightful — made for an audience of one,
+          built over a weekend, and probably wouldn't cost more than a buck or two.
+        </p>
+        <p>
+          Think of it as a neighborhood of weird little software shops,
+          each one built with love by someone who just wanted to make something fun.
+        </p>
+        <div class="manifesto-cta">
+          <a href="/submit/" class="btn btn-primary">Add Your Tool ✨</a>
+          <a href="/about/" class="btn btn-secondary">Learn More</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+
+  .section-subtitle {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    margin-left: 0.75rem;
+  }
+
+  .view-all {
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .featured-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .manifesto-section {
+    margin-top: 2rem;
+  }
+
+  .manifesto-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .manifesto-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .manifesto-card p {
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .manifesto-card strong {
+    color: var(--color-primary);
+  }
+
+  .manifesto-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary {
+    background: var(--color-primary);
+    color: var(--color-bg);
+  }
+
+  .btn-primary:hover {
+    background: #ffa033;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(255, 137, 6, 0.4);
+    color: var(--color-bg);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--color-text);
+    border: 2px solid var(--color-border);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  @media (max-width: 640px) {
+    .section-header { flex-direction: column; gap: 0.25rem; }
+  }
+</style>

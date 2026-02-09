@@ -1,0 +1,99 @@
+name: 🏠 Submit a Tiny Tool
+description: Add your free, fun & open source tool to Tiny Tool Town!
+title: "[Tool] "
+labels: ["new-tool"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Welcome to Tiny Tool Town! 🏘️
+        Fill out this form and we'll add your tool to the town. You can also [submit a PR](https://tinytooltown.com/submit/) if you prefer.
+
+  - type: input
+    id: name
+    attributes:
+      label: Tool Name
+      placeholder: "e.g., Toasty"
+    validations:
+      required: true
+
+  - type: input
+    id: tagline
+    attributes:
+      label: One-line description
+      description: Keep it short and fun — this shows on the card.
+      placeholder: "e.g., Tiny Windows toast notification CLI (229 KB)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Tell us about your tool
+      description: A few sentences about what it does, why you built it, and why it's delightful.
+      placeholder: "What does it do? Why did you build it? Why is it delightful?"
+    validations:
+      required: true
+
+  - type: input
+    id: github_url
+    attributes:
+      label: GitHub Repository URL
+      placeholder: "https://github.com/you/your-tool"
+    validations:
+      required: true
+
+  - type: input
+    id: website_url
+    attributes:
+      label: Website or Demo URL (optional)
+      placeholder: "https://your-tool.com"
+
+  - type: input
+    id: author
+    attributes:
+      label: Your Name
+      placeholder: "e.g., Jane Developer"
+    validations:
+      required: true
+
+  - type: input
+    id: author_github
+    attributes:
+      label: Your GitHub Username
+      placeholder: "e.g., janedev"
+    validations:
+      required: true
+
+  - type: input
+    id: tags
+    attributes:
+      label: Tags (comma-separated)
+      description: Free-form tags to help people find your tool.
+      placeholder: "cli, windows, fun, tiny"
+    validations:
+      required: true
+
+  - type: input
+    id: language
+    attributes:
+      label: Primary Programming Language
+      placeholder: "e.g., Python, Rust, C#, JavaScript"
+
+  - type: input
+    id: license
+    attributes:
+      label: License
+      placeholder: "e.g., MIT, Apache-2.0, GPL-3.0"
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Checklist
+      options:
+        - label: This tool is free and open source
+          required: true
+        - label: This tool is not enterprise software or paid SaaS
+          required: true
+        - label: The GitHub repo is public and the tool works
+          required: true
