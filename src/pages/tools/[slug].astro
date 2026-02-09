@@ -3,16 +3,21 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { getCollection, render } from 'astro:content';
+import { getReadmeImage } from '../../utils/readme-image';
 
 export async function getStaticPaths() {
   const tools = await getCollection('tools');
-  return tools.map(tool => ({
-    params: { slug: tool.id.replace(/\.md$/, '') },
-    props: { tool },
+  const paths = await Promise.all(tools.map(async (tool) => {
+    const readmeImg = await getReadmeImage(tool.data.github_url);
+    return {
+      params: { slug: tool.id.replace(/\.md$/, '') },
+      props: { tool, readmeImage: tool.data.thumbnail || readmeImg },
+    };
   }));
+  return paths;
 }
 
-const { tool } = Astro.props;
+const { tool, readmeImage } = Astro.props;
 const { Content } = await render(tool);
 
 const langColors: Record<string, string> = {
@@ -95,9 +100,9 @@ const langColor = tool.data.language ? langColors[tool.data.language] || '#8b949
           </div>
         </div>
 
-        {tool.data.thumbnail && (
+        {readmeImage && (
           <div class="tool-screenshot">
-            <img src={tool.data.thumbnail} alt={`Screenshot of ${tool.data.name}`} />
+            <img src={readmeImage} alt={`Screenshot of ${tool.data.name}`} />
           </div>
         )}
       </div>

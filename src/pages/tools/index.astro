@@ -4,10 +4,20 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import ToolCard from '../../components/ToolCard.astro';
 import { getCollection } from 'astro:content';
+import { getReadmeImage } from '../../utils/readme-image';
 
 const allTools = await getCollection('tools');
 const tools = allTools.sort((a, b) =>
   new Date(b.data.date_added).getTime() - new Date(a.data.date_added).getTime()
+);
+
+// Fetch README images for all tools in parallel
+const toolImages = new Map<string, string | null>();
+await Promise.all(
+  tools.map(async (tool) => {
+    const img = tool.data.thumbnail || await getReadmeImage(tool.data.github_url);
+    toolImages.set(tool.id, img);
+  })
 );
 
 const allTags = [...new Set(tools.flatMap(t => t.data.tags))].sort();
@@ -59,7 +69,7 @@ const allTags = [...new Set(tools.flatMap(t => t.data.tags))].sort();
             tags={tool.data.tags}
             language={tool.data.language}
             featured={tool.data.featured}
-            thumbnail={tool.data.thumbnail}
+            thumbnail={toolImages.get(tool.id) || tool.data.thumbnail}
           />
         </div>
       ))}
