@@ -39,10 +39,36 @@ language: "Python"
 license: "MIT"
 date_added: "2026-02-09"
 featured: false
+theme: "neon"  # Optional: Choose a theme for your tool's page
 ---
 
 A few sentences about your tool. What does it do?
 Why did you build it? Why is it delightful?
+```
+
+### Available Themes
+
+Each tool can have its own custom theme! Just add the `theme` field to your tool's frontmatter. Choose from:
+
+- `dark` (default) — Modern dark theme
+- `light` — Clean light mode
+- `geocities` — 90s retro vibes 🌈
+- `terminal` — Hacker terminal aesthetic
+- `neon` — Cyberpunk neon colors
+- `minimal` — Clean and simple
+- `pastel` — Soft, dreamy colors
+- `matrix` — Green code rain
+- `sunset` — Warm sunset tones
+- `ocean` — Deep blue waters
+- `forest` — Natural greens
+- `candy` — Sweet pink theme
+- `synthwave` — 80s retrowave
+- `newspaper` — Classic print style
+- `retro` — Vintage gaming vibes
+
+**Example:**
+```markdown
+theme: "candy"  # Makes your tool page pink and playful!
 ```
 
 ## What makes a good Tiny Tool?

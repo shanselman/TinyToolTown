@@ -32,9 +32,10 @@ const langColor = tool.data.language ? langColors[tool.data.language] || '#8b949
   title={`${tool.data.name} — Tiny Tool Town 🏘️`}
   description={tool.data.tagline}
 >
-  <Header />
+  <div data-theme={tool.data.theme || ''} class="tool-page-wrapper">
+    <Header />
 
-  <main class="container">
+    <main class="container">
     <div class="tool-detail">
       <!-- Breadcrumb -->
       <nav class="breadcrumb">
@@ -112,12 +113,19 @@ const langColor = tool.data.language ? langColors[tool.data.language] || '#8b949
         <a href="/tools/">← Back to all tools</a>
       </div>
     </div>
-  </main>
+    </main>
 
-  <Footer />
+    <Footer />
+  </div>
 </BaseLayout>
 
 <style>
+  .tool-page-wrapper {
+    min-height: 100vh;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+  }
+
   .tool-detail {
     padding: 1.5rem 0 3rem;
     max-width: 900px;
