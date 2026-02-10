@@ -32,7 +32,7 @@ const langColor = tool.data.language ? langColors[tool.data.language] || '#8b949
   title={`${tool.data.name} — Tiny Tool Town 🏘️`}
   description={tool.data.tagline}
 >
-  <div data-theme={tool.data.theme || ''} class="tool-page-wrapper">
+  <div {...(tool.data.theme ? { 'data-theme': tool.data.theme } : {})} class="tool-page-wrapper">
     <Header />
 
     <main class="container">
