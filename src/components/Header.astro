@@ -115,7 +115,9 @@ const currentPath = Astro.url.pathname;
   const icons: Record<string, string> = { dark: '🌙', light: '☀️', geocities: '🌈' };
 
   function getTheme(): string {
-    return localStorage.getItem('ttt-theme') || 'dark';
+    const saved = localStorage.getItem('ttt-theme');
+    if (saved) return saved;
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
   }
 
   function setTheme(theme: string) {
