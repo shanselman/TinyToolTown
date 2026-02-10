@@ -144,7 +144,7 @@
   100% { transform: translateX(-100%); }
 }
 
-/* Retro Terminal Theme */
+/* Terminal Theme */
 [data-theme="terminal"] {
   --color-bg: #0c0c0c;
   --color-bg-card: #1a1a1a;
