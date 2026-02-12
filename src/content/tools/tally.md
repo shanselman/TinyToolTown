@@ -6,7 +6,7 @@ author_github: "davidfowl"
 github_url: "https://github.com/davidfowl/tally"
 thumbnail: "/thumbnails/tally.gif"
 website_url: "https://tallyai.money/"
-tags:["cli", "finance", "money", "budget"]
+tags: ["cli", "finance", "money", "budget"]
 language: "Python"
 license: "MIT"
 date_added: "2026-02-12"
