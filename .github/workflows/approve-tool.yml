@@ -160,33 +160,122 @@ jobs:
             // Write the file
             fs.writeFileSync(filePath, content);
 
-            // Download README thumbnail image
+            // Download README thumbnail image - pick biggest from top 5 images
             const badgeHosts = ['img.shields.io', 'badge.fury.io', 'badgen.net', 'badges.', 'coveralls.io', 'codecov.io', 'travis-ci.', 'ci.appveyor.com', 'github.com/workflows'];
             const isBadge = (u) => badgeHosts.some(h => u.includes(h)) || u.includes('/badge');
             const repoClean = github_url.replace(/\/$/, '');
             const repoOwner = repoClean.split('/')[3];
             const repoName = repoClean.split('/')[4];
+            const MIN_IMAGE_SIZE = 10 * 1024; // 10 KB minimum
             let thumbPath = null;
-            for (const branch of ['main', 'master']) {
+            
+            // First, check issue comments for uploaded images
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+            });
+            
+            let imageFromComment = null;
+            for (const comment of comments.data) {
+              const commentBody = comment.body || '';
+              // Look for uploaded images in markdown format (both http and https)
+              const uploadedImg = commentBody.match(/!\[[^\]]*\]\((https?:\/\/[^)]+)\)/);
+              if (uploadedImg) {
+                imageFromComment = uploadedImg[1];
+                console.log(`📸 Found uploaded image in comment: ${imageFromComment}`);
+                break;
+              }
+            }
+            
+            if (imageFromComment) {
+              // Use the uploaded image from comments
               try {
-                const readmeRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/${branch}/README.md`);
-                if (!readmeRes.ok) continue;
-                const readme = await readmeRes.text();
-                const mdImgs = [...readme.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)].find(m => !isBadge(m[1]));
-                const htmlImgs = [...readme.matchAll(/<img[^>]+src=["']([^"']+)["']/gi)].find(m => !isBadge(m[1]));
-                let imgUrl = mdImgs?.[1] || htmlImgs?.[1];
-                if (!imgUrl) continue;
-                if (!imgUrl.startsWith('http')) {
-                  imgUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/${branch}/${imgUrl.replace(/^\.\//, '')}`;
-                }
-                const ext = require('path').extname(new URL(imgUrl).pathname).split('?')[0] || '.png';
+                const ext = require('path').extname(new URL(imageFromComment).pathname).split('?')[0] || '.png';
                 const thumbFile = `${slug}${ext}`;
                 const thumbDest = `public/thumbnails/${thumbFile}`;
                 if (!fs.existsSync('public/thumbnails')) fs.mkdirSync('public/thumbnails', { recursive: true });
-                const imgRes = await fetch(imgUrl);
+                const imgRes = await fetch(imageFromComment);
                 if (imgRes.ok) {
                   const buf = Buffer.from(await imgRes.arrayBuffer());
-                  fs.writeFileSync(thumbDest, buf);
+                  if (buf.length >= MIN_IMAGE_SIZE) {
+                    fs.writeFileSync(thumbDest, buf);
+                    thumbPath = `/thumbnails/${thumbFile}`;
+                    const updated = fs.readFileSync(filePath, 'utf-8').replace(
+                      /(github_url:.*\n)/,
+                      `$1thumbnail: "${thumbPath}"\n`
+                    );
+                    fs.writeFileSync(filePath, updated);
+                    console.log(`📸 Downloaded thumbnail from comment: ${thumbFile} (${(buf.length / 1024).toFixed(1)} KB)`);
+                  }
+                }
+              } catch (e) {
+                console.log(`⚠️ Failed to download image from comment: ${e.message}`);
+              }
+            }
+            
+            // If no image from comments, check README
+            let noSuitableImageFound = false;
+            if (!thumbPath) {
+              for (const branch of ['main', 'master']) {
+                try {
+                  const readmeRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/${branch}/README.md`);
+                  if (!readmeRes.ok) continue;
+                  const readme = await readmeRes.text();
+                  
+                  // Find all images (markdown and HTML), filter out badges
+                  const mdImgs = [...readme.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)].map(m => m[1]).filter(u => !isBadge(u));
+                  const htmlImgs = [...readme.matchAll(/<img[^>]+src=["']([^"']+)["']/gi)].map(m => m[1]).filter(u => !isBadge(u));
+                  const allImages = [...mdImgs, ...htmlImgs];
+                  
+                  // Take top 5 images
+                  const topImages = allImages.slice(0, 5);
+                  
+                  if (topImages.length === 0) {
+                    console.log(`⚠️ No images found in README`);
+                    noSuitableImageFound = true;
+                    break;
+                  }
+                  
+                  console.log(`🔍 Found ${topImages.length} candidate images in README`);
+                  
+                  // Download each image and check size
+                  const imageCandidates = [];
+                  for (const imgPath of topImages) {
+                    try {
+                      let imgUrl = imgPath;
+                      if (!imgPath.startsWith('http')) {
+                        imgUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/${branch}/${imgPath.replace(/^\.\//, '')}`;
+                      }
+                      const imgRes = await fetch(imgUrl);
+                      if (imgRes.ok) {
+                        const buf = Buffer.from(await imgRes.arrayBuffer());
+                        console.log(`  📏 ${imgUrl.split('/').pop()}: ${(buf.length / 1024).toFixed(1)} KB`);
+                        if (buf.length >= MIN_IMAGE_SIZE) {
+                          imageCandidates.push({ url: imgUrl, size: buf.length, buffer: buf });
+                        }
+                      }
+                    } catch (e) {
+                      console.log(`  ⚠️ Failed to fetch ${imgPath}: ${e.message}`);
+                    }
+                  }
+                  
+                  if (imageCandidates.length === 0) {
+                    console.log(`⚠️ No images met minimum size requirement (${MIN_IMAGE_SIZE / 1024} KB)`);
+                    noSuitableImageFound = true;
+                    break;
+                  }
+                  
+                  // Pick the biggest image
+                  imageCandidates.sort((a, b) => b.size - a.size);
+                  const bestImage = imageCandidates[0];
+                  
+                  const ext = require('path').extname(new URL(bestImage.url).pathname).split('?')[0] || '.png';
+                  const thumbFile = `${slug}${ext}`;
+                  const thumbDest = `public/thumbnails/${thumbFile}`;
+                  if (!fs.existsSync('public/thumbnails')) fs.mkdirSync('public/thumbnails', { recursive: true });
+                  
+                  fs.writeFileSync(thumbDest, bestImage.buffer);
                   thumbPath = `/thumbnails/${thumbFile}`;
                   // Update the .md to include thumbnail
                   const updated = fs.readFileSync(filePath, 'utf-8').replace(
@@ -194,11 +283,21 @@ jobs:
                     `$1thumbnail: "${thumbPath}"\n`
                   );
                   fs.writeFileSync(filePath, updated);
-                  console.log(`📸 Downloaded thumbnail: ${thumbFile}`);
+                  console.log(`📸 Downloaded thumbnail: ${thumbFile} (${(bestImage.size / 1024).toFixed(1)} KB) - biggest of ${imageCandidates.length} candidates`);
+                  break;
+                } catch (e) {
+                  console.log(`⚠️ Thumbnail fetch failed: ${e.message}`);
                 }
-                break;
-              } catch (e) {
-                console.log(`⚠️ Thumbnail fetch failed: ${e.message}`);
+              }
+              
+              // Post a comment if no suitable image was found
+              if (noSuitableImageFound) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body: `📸 **Image needed!**\n\nI couldn't find a suitable thumbnail image in your README. The images I found were either too small (less than ${MIN_IMAGE_SIZE / 1024} KB) or were badges/icons.\n\nPlease upload a screenshot or image that showcases your tool by:\n1. Dragging and dropping an image into a comment below\n2. Using markdown syntax: \`![Description](image-url)\`\n\nOnce you've uploaded an image, I'll automatically use it when the tool is approved. Thanks! ✨`
+                });
               }
             }
 
