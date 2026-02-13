@@ -9,6 +9,7 @@ tags: ["game", "kids", "fun", "desktop"]
 language: "C#"
 license: "MIT"
 date_added: "2026-02-09"
+theme: "candy"
 ---
 
 The OG tiny tool. Let your baby smash the keyboard and watch colorful shapes, letters, and numbers fly across the screen. Every key does something delightful. No way to break anything. Pure joy for tiny humans.

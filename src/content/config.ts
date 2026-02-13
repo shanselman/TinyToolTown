@@ -15,6 +15,7 @@ const tools = defineCollection({
     license: z.string().optional(),
     date_added: z.string(),
     featured: z.boolean().optional().default(false),
+    theme: z.string().optional(),
   }),
 });
 
