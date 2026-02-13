@@ -11,7 +11,20 @@ const tools = allTools.sort((a, b) =>
   new Date(b.data.date_added).getTime() - new Date(a.data.date_added).getTime()
 );
 
-const allTags = [...new Set(tools.flatMap(t => t.data.tags.map(tag => tag.toLowerCase())))].sort();
+// Count tag frequency and split into popular (3+) and rest
+const tagCounts = new Map<string, number>();
+tools.forEach(t => t.data.tags.forEach(tag => {
+  const lower = tag.toLowerCase();
+  tagCounts.set(lower, (tagCounts.get(lower) || 0) + 1);
+}));
+const popularTags = [...tagCounts.entries()]
+  .filter(([, count]) => count >= 3)
+  .sort((a, b) => b[1] - a[1])
+  .map(([tag]) => tag);
+const moreTags = [...tagCounts.entries()]
+  .filter(([, count]) => count < 3)
+  .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+  .map(([tag]) => tag);
 ---
 
 <BaseLayout title="Browse Tools — Tiny Tool Town 🏘️" description="Explore all the tiny, delightful, open source tools in Tiny Tool Town.">
@@ -38,9 +51,17 @@ const allTags = [...new Set(tools.flatMap(t => t.data.tags.map(tag => tag.toLowe
       </div>
       <div class="tags-filter" id="tags-filter">
         <button class="tag-btn active" data-tag="all">All</button>
-        {allTags.map(tag => (
-          <button class="tag-btn" data-tag={tag}>{tag}</button>
+        {popularTags.map(tag => (
+          <button class="tag-btn" data-tag={tag}>{tag} <span class="tag-count">{tagCounts.get(tag)}</span></button>
         ))}
+        {moreTags.length > 0 && (
+          <button class="tag-btn more-tags-toggle" id="more-tags-toggle">More ▾</button>
+        )}
+        <div class="more-tags" id="more-tags" style="display: none;">
+          {moreTags.map(tag => (
+            <button class="tag-btn" data-tag={tag}>{tag}</button>
+          ))}
+        </div>
       </div>
     </div>
 
@@ -86,10 +107,21 @@ const allTags = [...new Set(tools.flatMap(t => t.data.tags.map(tag => tag.toLowe
   const search = document.getElementById('search') as HTMLInputElement;
   const grid = document.getElementById('tool-grid')!;
   const items = grid.querySelectorAll('.tool-item');
-  const tagButtons = document.querySelectorAll('.tag-btn');
+  const tagButtons = document.querySelectorAll('.tag-btn:not(.more-tags-toggle)');
   const noResults = document.getElementById('no-results')!;
+  const moreToggle = document.getElementById('more-tags-toggle');
+  const moreTags = document.getElementById('more-tags');
 
   let activeTag = 'all';
+
+  // "More ▾" expander
+  if (moreToggle && moreTags) {
+    moreToggle.addEventListener('click', () => {
+      const visible = moreTags.style.display !== 'none';
+      moreTags.style.display = visible ? 'none' : 'contents';
+      moreToggle.textContent = visible ? 'More ▾' : 'Less ▴';
+    });
+  }
 
   function filterTools() {
     const query = search.value.toLowerCase().trim();
@@ -99,7 +131,7 @@ const allTags = [...new Set(tools.flatMap(t => t.data.tags.map(tag => tag.toLowe
       const el = item as HTMLElement;
       const name = el.dataset.name || '';
       const tagline = el.dataset.tagline || '';
-      const tags = el.dataset.tags || '';
+      const tags = (el.dataset.tags || '').toLowerCase();
 
       const matchesSearch = !query || name.includes(query) || tagline.includes(query);
       const matchesTag = activeTag === 'all' || tags.split(',').includes(activeTag);
@@ -117,13 +149,14 @@ const allTags = [...new Set(tools.flatMap(t => t.data.tags.map(tag => tag.toLowe
 
   search.addEventListener('input', filterTools);
 
-  tagButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tagButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      activeTag = (btn as HTMLElement).dataset.tag || 'all';
-      filterTools();
-    });
+  // Handle tag clicks (both popular and expanded)
+  document.getElementById('tags-filter')!.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('.tag-btn:not(.more-tags-toggle)') as HTMLElement;
+    if (!btn || !btn.dataset.tag) return;
+    document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeTag = btn.dataset.tag;
+    filterTools();
   });
 </script>
 
@@ -209,6 +242,25 @@ const allTags = [...new Set(tools.flatMap(t => t.data.tags.map(tag => tag.toLowe
     background: var(--color-primary);
     color: var(--color-bg);
     border-color: var(--color-primary);
+  }
+
+  .tag-count {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    margin-left: 0.15rem;
+  }
+
+  .tag-btn.active .tag-count {
+    opacity: 0.8;
+  }
+
+  .more-tags-toggle {
+    border-style: dashed;
+    font-style: italic;
+  }
+
+  .more-tags {
+    display: contents;
   }
 
   .tool-grid {
