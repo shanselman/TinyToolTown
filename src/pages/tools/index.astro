@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import ToolCard from '../../components/ToolCard.astro';
+import TikTokView from '../../components/TikTokView.astro';
 import { getCollection } from 'astro:content';
 
 const allTools = await getCollection('tools');
@@ -69,6 +70,13 @@ const allTags = [...new Set(tools.flatMap(t => t.data.tags))].sort();
       <p>🔍 No tools found. Try a different search?</p>
     </div>
   </main>
+
+  <!-- Floating button to launch Shorts mode -->
+  <button id="launch-vertical-view-tools" class="floating-shorts-btn" aria-label="Open shorts view">
+    📱 Shorts
+  </button>
+
+  <TikTokView tools={tools} />
 
   <Footer />
 </BaseLayout>
@@ -214,4 +222,55 @@ const allTags = [...new Set(tools.flatMap(t => t.data.tags))].sort();
     color: var(--color-text-muted);
     font-size: 1.1rem;
   }
+
+  /* Floating Shorts Button */
+  .floating-shorts-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    color: #fff;
+    border: none;
+    padding: 0.875rem 1.5rem;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(255, 137, 6, 0.35);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .floating-shorts-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 32px rgba(255, 137, 6, 0.5);
+  }
+
+  .floating-shorts-btn:active {
+    transform: translateY(-1px) scale(1.02);
+  }
+
+  @media (max-width: 640px) {
+    .floating-shorts-btn {
+      bottom: 1.25rem;
+      right: 1.25rem;
+      padding: 0.75rem 1.25rem;
+      font-size: 0.9rem;
+    }
+  }
 </style>
+
+<script>
+  // Launch vertical shorts view when button is clicked
+  const launchBtn = document.getElementById('launch-vertical-view-tools');
+  if (launchBtn) {
+    launchBtn.addEventListener('click', () => {
+      if (typeof (window as any).launchShortsViewer === 'function') {
+        (window as any).launchShortsViewer();
+      }
+    });
+  }
+</script>

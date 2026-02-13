@@ -1,0 +1,612 @@
+---
+// Shorts-style viewer for TinyToolTown
+interface Props {
+  tools: any[];
+}
+
+const { tools } = Astro.props;
+
+// Constants for gradient generation - creates varied color backgrounds for tools without thumbnails
+const HUE_OFFSET_PRIMARY = 37;
+const HUE_OFFSET_SECONDARY = 53;
+---
+
+<div id="shorts-viewer" class="viewer-hidden">
+  <button id="exit-shorts" class="exit-control" aria-label="Exit">✕</button>
+  
+  <div class="viewer-track">
+    {tools.map((tool, index) => {
+      const toolPath = tool.id.replace(/\.md$/, '');
+      const hasImage = !!tool.data.thumbnail;
+      
+      return (
+        <section class="tool-panel" data-position={index}>
+          {/* Background layer */}
+          <div class="panel-bg">
+            {hasImage ? (
+              <img src={tool.data.thumbnail} alt="" class="bg-image" />
+            ) : (
+              <div class="bg-gradient" style={`background: linear-gradient(135deg, hsl(${index * HUE_OFFSET_PRIMARY}, 70%, 50%), hsl(${index * HUE_OFFSET_SECONDARY}, 60%, 40%))`}></div>
+            )}
+            <div class="bg-dim"></div>
+          </div>
+          
+          {/* Content layer */}
+          <div class="panel-content">
+            <div class="content-wrapper">
+              <div class="tool-thumbnail">
+                {hasImage ? (
+                  <img src={tool.data.thumbnail} alt={tool.data.name} />
+                ) : (
+                  <div class="thumb-placeholder">🔧</div>
+                )}
+              </div>
+              
+              <h2 class="tool-heading">{tool.data.name}</h2>
+              <p class="tool-description">{tool.data.tagline}</p>
+              
+              <div class="creator-info">
+                <img 
+                  src={`https://github.com/${tool.data.author_github}.png?size=32`}
+                  alt={tool.data.author}
+                  class="creator-avatar"
+                  width="28"
+                  height="28"
+                />
+                <span class="creator-handle">@{tool.data.author}</span>
+              </div>
+              
+              <div class="metadata-tags">
+                {tool.data.tags.slice(0, 3).map(tag => (
+                  <span class="metadata-tag">{tag}</span>
+                ))}
+              </div>
+              
+              <a href={`/tools/${toolPath}/`} class="navigate-link">
+                View Full Details →
+              </a>
+            </div>
+          </div>
+
+          {/* Actions sidebar */}
+          <aside class="panel-actions">
+            <button class="panel-action favorite-action" data-tool={toolPath} aria-label="Favorite">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+              <span class="action-text">Like</span>
+            </button>
+            
+            <button class="panel-action distribute-action" data-tool-title={tool.data.name} aria-label="Share">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+              </svg>
+              <span class="action-text">Share</span>
+            </button>
+
+            <a href={tool.data.github_url} target="_blank" rel="noopener noreferrer" class="panel-action repository-action" aria-label="GitHub Repository">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+              </svg>
+              <span class="action-text">Code</span>
+            </a>
+          </aside>
+
+          {/* Position counter */}
+          <div class="panel-counter">{index + 1} / {tools.length}</div>
+        </section>
+      );
+    })}
+  </div>
+</div>
+
+<script>
+  // Navigation state
+  let viewerState = {
+    index: 0,
+    active: false,
+    swipeStart: 0,
+    swiping: false
+  };
+
+  // Minimum distance (in pixels) for a swipe to be recognized
+  const SWIPE_THRESHOLD = 60;
+
+  function setupViewer() {
+    const viewer = document.getElementById('shorts-viewer');
+    const panels = document.querySelectorAll('.tool-panel');
+    const exitBtn = document.getElementById('exit-shorts');
+
+    if (!viewer || panels.length === 0) return;
+
+    panels[0]?.classList.add('panel-visible');
+    exitBtn?.addEventListener('click', hideViewer);
+
+    // Touch handling
+    viewer.addEventListener('touchstart', handleSwipeStart, { passive: true });
+    viewer.addEventListener('touchmove', preventScrollIfActive, { passive: false });
+    viewer.addEventListener('touchend', handleSwipeEnd);
+
+    // Mouse handling
+    viewer.addEventListener('mousedown', handleDragStart);
+    viewer.addEventListener('mouseup', handleDragEnd);
+
+    // Wheel handling
+    viewer.addEventListener('wheel', handleWheel, { passive: false });
+
+    // Keyboard handling
+    document.addEventListener('keydown', handleKeys);
+
+    // Action buttons
+    panels.forEach(panel => {
+      const favBtn = panel.querySelector('.favorite-action');
+      const shareBtn = panel.querySelector('.distribute-action');
+      
+      favBtn?.addEventListener('click', toggleFavorite);
+      shareBtn?.addEventListener('click', sharePanel);
+    });
+  }
+
+  function handleSwipeStart(e: TouchEvent) {
+    viewerState.swipeStart = e.touches[0].clientY;
+    viewerState.swiping = true;
+  }
+
+  function preventScrollIfActive(e: TouchEvent) {
+    if (viewerState.swiping && viewerState.active) e.preventDefault();
+  }
+
+  function handleSwipeEnd(e: TouchEvent) {
+    if (!viewerState.swiping || !viewerState.active) return;
+    
+    const swipeEnd = e.changedTouches[0].clientY;
+    const distance = viewerState.swipeStart - swipeEnd;
+
+    if (Math.abs(distance) > SWIPE_THRESHOLD) {
+      distance > 0 ? advancePanel() : retreatPanel();
+    }
+    
+    viewerState.swiping = false;
+  }
+
+  function handleDragStart(e: MouseEvent) {
+    const clicked = e.target as HTMLElement;
+    if (clicked.closest('.panel-action') || clicked.closest('.navigate-link') || clicked.closest('.exit-control')) return;
+    
+    viewerState.swipeStart = e.clientY;
+    viewerState.swiping = true;
+  }
+
+  function handleDragEnd(e: MouseEvent) {
+    if (!viewerState.swiping || !viewerState.active) return;
+    
+    const dragEnd = e.clientY;
+    const distance = viewerState.swipeStart - dragEnd;
+
+    if (Math.abs(distance) > SWIPE_THRESHOLD) {
+      distance > 0 ? advancePanel() : retreatPanel();
+    }
+    
+    viewerState.swiping = false;
+  }
+
+  function handleWheel(e: WheelEvent) {
+    if (!viewerState.active) return;
+    e.preventDefault();
+    e.deltaY > 0 ? advancePanel() : retreatPanel();
+  }
+
+  function handleKeys(e: KeyboardEvent) {
+    if (!viewerState.active) return;
+    
+    const keyActions: Record<string, () => void> = {
+      'ArrowDown': () => { e.preventDefault(); advancePanel(); },
+      'ArrowRight': () => { e.preventDefault(); advancePanel(); },
+      'ArrowUp': () => { e.preventDefault(); retreatPanel(); },
+      'ArrowLeft': () => { e.preventDefault(); retreatPanel(); },
+      'Escape': () => { e.preventDefault(); hideViewer(); }
+    };
+
+    keyActions[e.key]?.();
+  }
+
+  function advancePanel() {
+    const panels = document.querySelectorAll('.tool-panel');
+    if (viewerState.index < panels.length - 1) {
+      panels[viewerState.index].classList.remove('panel-visible');
+      viewerState.index++;
+      panels[viewerState.index].classList.add('panel-visible');
+    }
+  }
+
+  function retreatPanel() {
+    const panels = document.querySelectorAll('.tool-panel');
+    if (viewerState.index > 0) {
+      panels[viewerState.index].classList.remove('panel-visible');
+      viewerState.index--;
+      panels[viewerState.index].classList.add('panel-visible');
+    }
+  }
+
+  function hideViewer() {
+    const viewer = document.getElementById('shorts-viewer');
+    if (viewer) {
+      viewer.classList.add('viewer-hidden');
+      viewerState.active = false;
+      document.body.style.overflow = '';
+    }
+  }
+
+  function toggleFavorite(e: Event) {
+    const btn = e.currentTarget as HTMLElement;
+    const isFavorited = btn.classList.toggle('favorited');
+    
+    const svg = btn.querySelector('svg');
+    if (svg) {
+      svg.style.animation = 'heartbeat 0.35s ease';
+      setTimeout(() => svg.style.animation = '', 350);
+    }
+    
+    // Store in localStorage
+    const toolId = btn.getAttribute('data-tool');
+    if (toolId) {
+      const favorites = JSON.parse(localStorage.getItem('ttt-favorites') || '[]');
+      if (isFavorited) {
+        if (!favorites.includes(toolId)) favorites.push(toolId);
+      } else {
+        const idx = favorites.indexOf(toolId);
+        if (idx > -1) favorites.splice(idx, 1);
+      }
+      localStorage.setItem('ttt-favorites', JSON.stringify(favorites));
+    }
+  }
+
+  function sharePanel(e: Event) {
+    const btn = e.currentTarget as HTMLElement;
+    const toolTitle = btn.getAttribute('data-tool-title');
+    const currentUrl = window.location.origin + window.location.pathname;
+
+    if (navigator.share) {
+      navigator.share({
+        title: toolTitle || 'Tiny Tool Town',
+        text: toolTitle ? `Check out "${toolTitle}" on Tiny Tool Town! 🏘️` : 'Check out this tool on Tiny Tool Town! 🏘️',
+        url: currentUrl,
+      }).catch(() => {
+        // User cancelled or share failed - this is expected behavior, no action needed
+      });
+    } else {
+      navigator.clipboard.writeText(currentUrl).then(() => {
+        const textEl = btn.querySelector('.action-text');
+        if (textEl) {
+          const original = textEl.textContent;
+          textEl.textContent = 'Copied!';
+          setTimeout(() => textEl.textContent = original, 2000);
+        }
+      });
+    }
+  }
+
+  function loadFavoriteStates() {
+    const favorites = JSON.parse(localStorage.getItem('ttt-favorites') || '[]');
+    favorites.forEach((toolId: string) => {
+      const btn = document.querySelector(`.favorite-action[data-tool="${toolId}"]`);
+      btn?.classList.add('favorited');
+    });
+  }
+
+  // Global function to open viewer
+  (window as any).launchShortsViewer = function() {
+    const viewer = document.getElementById('shorts-viewer');
+    if (viewer) {
+      viewer.classList.remove('viewer-hidden');
+      viewerState.active = true;
+      viewerState.index = 0;
+      document.body.style.overflow = 'hidden';
+      
+      const panels = document.querySelectorAll('.tool-panel');
+      panels.forEach((p, i) => p.classList.toggle('panel-visible', i === 0));
+      
+      loadFavoriteStates();
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupViewer);
+  } else {
+    setupViewer();
+  }
+</script>
+
+<style>
+  #shorts-viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #000;
+    overflow: hidden;
+  }
+
+  #shorts-viewer.viewer-hidden {
+    display: none;
+  }
+
+  .exit-control {
+    position: fixed;
+    top: 1.25rem;
+    left: 1.25rem;
+    z-index: 10001;
+    background: rgba(0, 0, 0, 0.65);
+    border: none;
+    color: #fff;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    backdrop-filter: blur(12px);
+    font-size: 1.375rem;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .exit-control:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.1);
+  }
+
+  .viewer-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .tool-panel {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(105%);
+  }
+
+  .tool-panel.panel-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .panel-bg {
+    position: absolute;
+    inset: 0;
+  }
+
+  .bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(22px) brightness(0.38);
+  }
+
+  .bg-gradient {
+    width: 100%;
+    height: 100%;
+  }
+
+  .bg-dim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, 
+      rgba(0, 0, 0, 0.28) 0%, 
+      rgba(0, 0, 0, 0.72) 100%);
+  }
+
+  .panel-content {
+    position: absolute;
+    bottom: 5.5rem;
+    left: 0;
+    right: 6rem;
+    padding: 0 1.5rem;
+    color: #fff;
+    z-index: 10;
+  }
+
+  .content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  .tool-thumbnail {
+    width: 3.875rem;
+    height: 3.875rem;
+    border-radius: 0.875rem;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(14px);
+    display: grid;
+    place-items: center;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+  }
+
+  .tool-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .thumb-placeholder {
+    font-size: 2.125rem;
+  }
+
+  .tool-heading {
+    font-size: 1.625rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+    text-shadow: 0 3px 12px rgba(0, 0, 0, 0.65);
+  }
+
+  .tool-description {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    opacity: 0.96;
+    margin: 0;
+    text-shadow: 0 2px 7px rgba(0, 0, 0, 0.65);
+  }
+
+  .creator-info {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-top: 0.375rem;
+  }
+
+  .creator-avatar {
+    width: 1.875rem;
+    height: 1.875rem;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+  }
+
+  .creator-handle {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-shadow: 0 2px 7px rgba(0, 0, 0, 0.65);
+  }
+
+  .metadata-tags {
+    display: flex;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+  }
+
+  .metadata-tag {
+    font-size: 0.8125rem;
+    padding: 0.375rem 0.875rem;
+    background: rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(14px);
+    border-radius: 1.375rem;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    font-weight: 500;
+  }
+
+  .navigate-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.375rem;
+    background: rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 1.75rem;
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 0.625rem;
+    width: fit-content;
+  }
+
+  .navigate-link:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: translateX(0.375rem);
+  }
+
+  .panel-actions {
+    position: absolute;
+    right: 1rem;
+    bottom: 6.875rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    z-index: 10;
+  }
+
+  .panel-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(14px);
+    border: none;
+    color: #fff;
+    padding: 0.75rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+  }
+
+  .panel-action:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.12);
+  }
+
+  .action-text {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-shadow: 0 2px 7px rgba(0, 0, 0, 0.9);
+  }
+
+  .favorite-action.favorited svg {
+    fill: #ff2d55;
+    stroke: #ff2d55;
+  }
+
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.35); }
+  }
+
+  .panel-counter {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(14px);
+    color: #fff;
+    padding: 0.5rem 0.875rem;
+    border-radius: 1.375rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    z-index: 10;
+  }
+
+  @media (max-width: 640px) {
+    .panel-content {
+      bottom: 7rem;
+      right: 5.625rem;
+    }
+
+    .tool-heading {
+      font-size: 1.375rem;
+    }
+
+    .tool-description {
+      font-size: 0.875rem;
+    }
+  }
+
+  @media (min-width: 641px) {
+    #shorts-viewer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .viewer-track {
+      max-width: 32.5rem;
+      max-height: 92vh;
+      border-radius: 1.5rem;
+      overflow: hidden;
+      box-shadow: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.65);
+    }
+  }
+</style>
