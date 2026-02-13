@@ -5,7 +5,7 @@ author: "Vítězslav Šimon"
 author_github: "VitSimon"
 github_url: "https://github.com/HelpViewer/HelpViewer/"
 website_url: "https://helpviewer.github.io/"
-tags: ["web;static;help;manual;markdown;viewer;reader"]
+tags: ["web", "static", "help", "manual", "markdown", "viewer", "reader"]
 language: "JavaScript"
 license: "MIT"
 date_added: "2026-02-13"
