@@ -28,8 +28,11 @@ const {
   <meta property="og:url" content={Astro.url.href} />
   <meta property="og:site_name" content="Tiny Tool Town" />
   <meta property="og:image" content={new URL(ogImage, "https://www.tinytooltown.com").href} />
+  <meta property="og:image:secure_url" content={new URL(ogImage, "https://www.tinytooltown.com").href} />
+  <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Tiny Tool Town - A place for stupid-delightful tools made with love" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
