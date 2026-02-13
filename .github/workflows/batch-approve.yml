@@ -1,0 +1,338 @@
+name: Batch Approve Tool Submissions
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: approve-tool
+  cancel-in-progress: false
+
+jobs:
+  batch-add-tools:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Process all approved issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const { execFileSync } = require('child_process');
+
+            // --- Shared helpers ---
+            const sanitize = (s) => s.replace(/[\r\n]+/g, ' ').replace(/[^\x20-\x7E\xA0-\uFFFF]/g, '').trim();
+            const yamlStr = (s) => `"${sanitize(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+            const safeImageExt = (urlStr) => {
+              const allowed = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'];
+              try {
+                const ext = path.extname(new URL(urlStr).pathname).split('?')[0].toLowerCase();
+                return allowed.includes(ext) ? ext : '.png';
+              } catch { return '.png'; }
+            };
+            const badgeHosts = ['img.shields.io', 'badge.fury.io', 'badgen.net', 'badges.', 'coveralls.io', 'codecov.io', 'travis-ci.', 'ci.appveyor.com', 'github.com/workflows'];
+            const isBadge = (u) => badgeHosts.some(h => u.includes(h)) || u.includes('/badge');
+            const MIN_IMAGE_SIZE = 10 * 1024;
+
+            const getField = (body, label) => {
+              const regex = new RegExp(`### ${label}\\s*\\n\\s*([\\s\\S]*?)(?=\\n###|\\n\\n###|$)`);
+              const match = body.match(regex);
+              return match ? match[1].trim() : '';
+            };
+
+            // --- Find approved issues that haven't been processed yet ---
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'approved',
+              state: 'open',
+              per_page: 100,
+            });
+
+            console.log(`Found ${issues.length} open approved issues`);
+            if (issues.length === 0) return;
+
+            // Git config
+            execFileSync('git', ['config', 'user.name', 'Tiny Tool Town Bot']);
+            execFileSync('git', ['config', 'user.email', 'bot@tinytooltown.com']);
+
+            let processed = 0;
+            let skipped = 0;
+            let failed = 0;
+
+            for (const issue of issues) {
+              try {
+                const body = issue.body || '';
+                const name = getField(body, 'Tool Name');
+                const tagline = getField(body, 'One-line description');
+                const description = getField(body, 'Tell us about your tool');
+                const github_url = getField(body, 'GitHub Repository URL');
+                const website_url = getField(body, 'Website or Demo URL \\(optional\\)');
+                const author = getField(body, 'Your Name');
+                const author_github = getField(body, 'Your GitHub Username');
+                const tagsRaw = getField(body, 'Tags \\(comma-separated\\)');
+                const language = getField(body, 'Primary Programming Language');
+                const license = getField(body, 'License');
+
+                // Validate required fields
+                if (!name || !tagline || !github_url || !author || !author_github) {
+                  console.log(`⏭️ #${issue.number}: missing required fields, skipping`);
+                  skipped++;
+                  continue;
+                }
+
+                // Validate GitHub URL format
+                if (!/^https:\/\/github\.com\/[a-zA-Z0-9._-]+\/[a-zA-Z0-9._-]+\/?$/.test(github_url)) {
+                  console.log(`⏭️ #${issue.number}: invalid GitHub URL, skipping`);
+                  skipped++;
+                  continue;
+                }
+
+                // Generate slug
+                const slug = sanitize(name).toLowerCase()
+                  .replace(/[^a-z0-9]+/g, '-')
+                  .replace(/^-|-$/g, '');
+
+                if (!slug || slug.length < 2) {
+                  console.log(`⏭️ #${issue.number}: invalid slug, skipping`);
+                  skipped++;
+                  continue;
+                }
+
+                const filePath = `src/content/tools/${slug}.md`;
+
+                // Skip if already processed
+                if (fs.existsSync(filePath)) {
+                  console.log(`⏭️ #${issue.number} (${name}): already exists as ${slug}.md`);
+                  // Still close the issue if it's open
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    body: `🏘️ **Welcome to Tiny Tool Town!**\n\n**${sanitize(name)}** has been added and will be live on [tinytooltown.com](https://www.tinytooltown.com/tools/${slug}/) once the site rebuilds (about 1 minute).\n\nThanks for sharing your tool! ✨`
+                  });
+                  await github.rest.issues.update({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    state: 'closed'
+                  });
+                  skipped++;
+                  continue;
+                }
+
+                console.log(`🔧 Processing #${issue.number}: ${name}...`);
+
+                // Verify repo is public
+                const repoMatch = github_url.match(/github\.com\/([^/]+)\/([^/]+)/);
+                if (repoMatch) {
+                  try {
+                    const { data: repoData } = await github.rest.repos.get({
+                      owner: repoMatch[1],
+                      repo: repoMatch[2].replace(/\/$/, ''),
+                    });
+                    if (repoData.private) {
+                      console.log(`⏭️ #${issue.number}: repo is private, skipping`);
+                      skipped++;
+                      continue;
+                    }
+                  } catch (err) {
+                    console.log(`⏭️ #${issue.number}: can't access repo, skipping`);
+                    skipped++;
+                    continue;
+                  }
+                }
+
+                // Validate website URL
+                if (website_url && website_url !== '_No response_' && !/^https?:\/\/.+/.test(website_url)) {
+                  console.log(`⏭️ #${issue.number}: invalid website URL, skipping`);
+                  skipped++;
+                  continue;
+                }
+
+                // Build frontmatter
+                const tags = tagsRaw.split(',').map(t => sanitize(t)).filter(Boolean);
+                const today = new Date().toISOString().split('T')[0];
+                const lines = [
+                  '---',
+                  `name: ${yamlStr(name)}`,
+                  `tagline: ${yamlStr(tagline)}`,
+                  `author: ${yamlStr(author)}`,
+                  `author_github: "${sanitize(author_github).replace(/[^a-zA-Z0-9_-]/g, '')}"`,
+                  `github_url: "${sanitize(github_url)}"`,
+                ];
+                if (website_url && website_url !== '_No response_') {
+                  lines.push(`website_url: ${yamlStr(website_url)}`);
+                }
+                lines.push(`tags: [${tags.map(t => `"${t.replace(/"/g, '')}"`).join(', ')}]`);
+                if (language && language !== '_No response_') {
+                  lines.push(`language: "${sanitize(language).replace(/"/g, '')}"`);
+                }
+                if (license && license !== '_No response_') {
+                  lines.push(`license: "${sanitize(license).replace(/"/g, '')}"`);
+                }
+                lines.push(`date_added: "${today}"`);
+                lines.push('featured: false');
+                lines.push('---');
+                lines.push('');
+                lines.push(description);
+
+                fs.writeFileSync(filePath, lines.join('\n'));
+
+                // --- Thumbnail logic ---
+                const repoClean = github_url.replace(/\/$/, '');
+                const repoOwner = repoClean.split('/')[3];
+                const repoName = repoClean.split('/')[4];
+                let thumbPath = null;
+
+                // Check issue comments for uploaded images
+                const comments = await github.rest.issues.listComments({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                });
+
+                let imageFromComment = null;
+                for (const comment of comments.data) {
+                  const commentBody = comment.body || '';
+                  const uploadedImg = commentBody.match(/!\[[^\]]*\]\((https?:\/\/[^)]+)\)/);
+                  if (uploadedImg) {
+                    imageFromComment = uploadedImg[1];
+                    break;
+                  }
+                }
+
+                if (imageFromComment) {
+                  try {
+                    const ext = safeImageExt(imageFromComment);
+                    const thumbFile = `${slug}${ext}`;
+                    const thumbDest = `public/thumbnails/${thumbFile}`;
+                    if (!fs.existsSync('public/thumbnails')) fs.mkdirSync('public/thumbnails', { recursive: true });
+                    const imgRes = await fetch(imageFromComment);
+                    if (imgRes.ok) {
+                      const buf = Buffer.from(await imgRes.arrayBuffer());
+                      if (buf.length >= MIN_IMAGE_SIZE) {
+                        fs.writeFileSync(thumbDest, buf);
+                        thumbPath = `/thumbnails/${thumbFile}`;
+                        const updated = fs.readFileSync(filePath, 'utf-8').replace(
+                          /(github_url:.*\n)/,
+                          `$1thumbnail: "${thumbPath}"\n`
+                        );
+                        fs.writeFileSync(filePath, updated);
+                      }
+                    }
+                  } catch (e) {
+                    console.log(`  ⚠️ Comment image failed: ${e.message}`);
+                  }
+                }
+
+                if (!thumbPath) {
+                  for (const branch of ['main', 'master']) {
+                    try {
+                      const readmeRes = await fetch(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/${branch}/README.md`);
+                      if (!readmeRes.ok) continue;
+                      const readme = await readmeRes.text();
+
+                      const mdImgs = [...readme.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)].map(m => m[1]).filter(u => !isBadge(u));
+                      const htmlImgs = [...readme.matchAll(/<img[^>]+src=["']([^"']+)["']/gi)].map(m => m[1]).filter(u => !isBadge(u));
+                      const topImages = [...mdImgs, ...htmlImgs].slice(0, 5);
+
+                      if (topImages.length === 0) break;
+
+                      const imageCandidates = [];
+                      for (const imgPath of topImages) {
+                        try {
+                          let imgUrl = imgPath;
+                          if (!imgPath.startsWith('http')) {
+                            imgUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/${branch}/${imgPath.replace(/^\.\//, '')}`;
+                          }
+                          const imgRes = await fetch(imgUrl);
+                          if (imgRes.ok) {
+                            const buf = Buffer.from(await imgRes.arrayBuffer());
+                            if (buf.length >= MIN_IMAGE_SIZE) {
+                              imageCandidates.push({ url: imgUrl, size: buf.length, buffer: buf });
+                            }
+                          }
+                        } catch (e) { /* skip */ }
+                      }
+
+                      if (imageCandidates.length === 0) break;
+
+                      imageCandidates.sort((a, b) => b.size - a.size);
+                      const bestImage = imageCandidates[0];
+                      const ext = safeImageExt(bestImage.url);
+                      const thumbFile = `${slug}${ext}`;
+                      const thumbDest = `public/thumbnails/${thumbFile}`;
+                      if (!fs.existsSync('public/thumbnails')) fs.mkdirSync('public/thumbnails', { recursive: true });
+
+                      fs.writeFileSync(thumbDest, bestImage.buffer);
+                      thumbPath = `/thumbnails/${thumbFile}`;
+                      const updated = fs.readFileSync(filePath, 'utf-8').replace(
+                        /(github_url:.*\n)/,
+                        `$1thumbnail: "${thumbPath}"\n`
+                      );
+                      fs.writeFileSync(filePath, updated);
+                      break;
+                    } catch (e) {
+                      console.log(`  ⚠️ README image failed: ${e.message}`);
+                    }
+                  }
+                }
+
+                // Git add, commit
+                execFileSync('git', ['add', filePath]);
+                if (thumbPath) {
+                  execFileSync('git', ['add', 'public/thumbnails/']);
+                }
+                execFileSync('git', ['commit', '-m', `🏠 Add ${sanitize(name)} (from issue #${issue.number})`]);
+
+                // Push with rebase retry
+                for (let attempt = 0; attempt < 5; attempt++) {
+                  try {
+                    execFileSync('git', ['push']);
+                    break;
+                  } catch (e) {
+                    if (attempt === 4) throw e;
+                    console.log(`  ⚠️ Push retry ${attempt + 1}...`);
+                    execFileSync('git', ['pull', '--rebase']);
+                  }
+                }
+
+                // Close the issue
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body: `🏘️ **Welcome to Tiny Tool Town!**\n\n**${sanitize(name)}** has been added and will be live on [tinytooltown.com](https://www.tinytooltown.com/tools/${slug}/) once the site rebuilds (about 1 minute).\n\nThanks for sharing your tool! ✨`
+                });
+
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  state: 'closed'
+                });
+
+                console.log(`✅ #${issue.number}: ${name} added as ${slug}.md`);
+                processed++;
+
+              } catch (e) {
+                console.log(`❌ #${issue.number}: ${e.message}`);
+                failed++;
+              }
+            }
+
+            console.log(`\n📊 Done! Processed: ${processed}, Skipped: ${skipped}, Failed: ${failed}`);
+
+      - name: Trigger site rebuild
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches \
+            -d '{"ref":"main"}'
