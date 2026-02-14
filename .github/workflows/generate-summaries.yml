@@ -47,6 +47,7 @@ jobs:
 
       - name: Generate AI summaries
         if: steps.check.outputs.missing_count != '0' || github.event.inputs.mode == 'all'
+        timeout-minutes: 10
         env:
           GH_TOKEN: ${{ secrets.COPILOT_TOKEN }}
         run: |
