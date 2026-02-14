@@ -25,6 +25,23 @@ const moreTags = [...tagCounts.entries()]
   .filter(([, count]) => count < 3)
   .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
   .map(([tag]) => tag);
+
+// Count author frequency and get author details
+const authorData = new Map<string, { name: string; github: string; count: number }>();
+tools.forEach(t => {
+  const author = t.data.author;
+  if (authorData.has(author)) {
+    authorData.get(author)!.count++;
+  } else {
+    authorData.set(author, {
+      name: author,
+      github: t.data.author_github,
+      count: 1
+    });
+  }
+});
+const sortedAuthors = [...authorData.values()]
+  .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 ---
 
 <BaseLayout title="Browse Tools — Tiny Tool Town 🏘️" description="Explore all the tiny, delightful, open source tools in Tiny Tool Town.">
@@ -49,7 +66,31 @@ const moreTags = [...tagCounts.entries()]
           autocomplete="off"
         />
       </div>
-      <div class="tags-filter" id="tags-filter">
+      
+      <!-- Author Filter -->
+      <div class="filter-section">
+        <h3 class="filter-label">Filter by Author</h3>
+        <div class="authors-filter" id="authors-filter">
+          <button class="author-btn active" data-author="all">All Authors</button>
+          {sortedAuthors.map(author => (
+            <button class="author-btn" data-author={author.name.toLowerCase()}>
+              <img
+                src={`https://github.com/${author.github}.png?size=20`}
+                alt={author.name}
+                class="author-filter-avatar"
+                loading="lazy"
+              />
+              <span>{author.name}</span>
+              <span class="author-count">{author.count}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <!-- Tag Filter -->
+      <div class="filter-section">
+        <h3 class="filter-label">Filter by Tag</h3>
+        <div class="tags-filter" id="tags-filter">
         <button class="tag-btn active" data-tag="all">All</button>
         {popularTags.map(tag => (
           <button class="tag-btn" data-tag={tag}>{tag} <span class="tag-count">{tagCounts.get(tag)}</span></button>
@@ -62,6 +103,7 @@ const moreTags = [...tagCounts.entries()]
             <button class="tag-btn" data-tag={tag}>{tag}</button>
           ))}
         </div>
+      </div>
       </div>
     </div>
 
@@ -109,11 +151,13 @@ const moreTags = [...tagCounts.entries()]
   const grid = document.getElementById('tool-grid')!;
   const items = grid.querySelectorAll('.tool-item');
   const tagButtons = document.querySelectorAll('.tag-btn:not(.more-tags-toggle)');
+  const authorButtons = document.querySelectorAll('.author-btn');
   const noResults = document.getElementById('no-results')!;
   const moreToggle = document.getElementById('more-tags-toggle');
   const moreTags = document.getElementById('more-tags');
 
   let activeTag = 'all';
+  let activeAuthor = 'all';
 
   // "More ▾" expander
   if (moreToggle && moreTags) {
@@ -137,8 +181,9 @@ const moreTags = [...tagCounts.entries()]
 
       const matchesSearch = !query || name.includes(query) || tagline.includes(query) || tags.includes(query) || author.includes(query);
       const matchesTag = activeTag === 'all' || tags.split(',').includes(activeTag);
+      const matchesAuthor = activeAuthor === 'all' || author === activeAuthor;
 
-      if (matchesSearch && matchesTag) {
+      if (matchesSearch && matchesTag && matchesAuthor) {
         el.style.display = '';
         visible++;
       } else {
@@ -158,6 +203,16 @@ const moreTags = [...tagCounts.entries()]
     document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     activeTag = btn.dataset.tag;
+    filterTools();
+  });
+
+  // Handle author clicks
+  document.getElementById('authors-filter')!.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('.author-btn') as HTMLElement;
+    if (!btn || !btn.dataset.author) return;
+    document.querySelectorAll('.author-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeAuthor = btn.dataset.author;
     filterTools();
   });
 </script>
@@ -182,9 +237,25 @@ const moreTags = [...tagCounts.entries()]
     margin-bottom: 2rem;
   }
 
+  .filter-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .filter-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.75rem;
+    opacity: 0.8;
+  }
+
   .search-box {
     position: relative;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
   }
 
   .search-icon {
@@ -215,6 +286,55 @@ const moreTags = [...tagCounts.entries()]
   .search-input:focus {
     outline: none;
     border-color: var(--color-primary);
+  }
+
+  .authors-filter {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .author-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 50px;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .author-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .author-btn.active {
+    background: var(--color-primary);
+    color: var(--color-bg);
+    border-color: var(--color-primary);
+  }
+
+  .author-filter-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .author-count {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    margin-left: 0.15rem;
+  }
+
+  .author-btn.active .author-count {
+    opacity: 0.8;
   }
 
   .tags-filter {
