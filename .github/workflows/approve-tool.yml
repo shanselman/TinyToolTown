@@ -5,7 +5,7 @@ on:
     types: [labeled]
 
 concurrency:
-  group: approve-tool
+  group: approve-tool-${{ github.event.issue.number }}
   cancel-in-progress: false
 
 jobs:
