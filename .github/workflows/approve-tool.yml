@@ -36,7 +36,7 @@ jobs:
             const name = getField('Tool Name');
             const tagline = getField('One-line description');
             const description = getField('Tell us about your tool');
-            const github_url = getField('GitHub Repository URL');
+            let github_url = getField('GitHub Repository URL');
             const website_url = getField('Website or Demo URL \\(optional\\)');
             const author = getField('Your Name');
             const author_github = getField('Your GitHub Username');
