@@ -71,6 +71,7 @@ public static class ReadmeFetcher
     {
         try
         {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             if (acceptRaw)
                 request.Headers.Accept.ParseAdd("application/vnd.github.v3.raw");
@@ -78,13 +79,13 @@ public static class ReadmeFetcher
                 request.Headers.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            var response = await httpClient.SendAsync(request);
+            var response = await httpClient.SendAsync(request, cts.Token);
             if (response.IsSuccessStatusCode)
-                return await response.Content.ReadAsStringAsync();
+                return await response.Content.ReadAsStringAsync(cts.Token);
         }
         catch
         {
-            // Fall through
+            // Timeout or network error — fall through
         }
         return null;
     }
