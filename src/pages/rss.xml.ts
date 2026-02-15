@@ -12,10 +12,12 @@ export async function GET(context: APIContext) {
     return dateB.getTime() - dateA.getTime();
   });
 
+  const siteUrl = context.site ?? 'https://tinytooltown.com';
+
   return rss({
     title: 'Tiny Tool Town 🏘️',
     description: 'A delightful showcase for free, fun & open source tiny tools. Stupid-delightful software made with love.',
-    site: context.site ?? 'https://tinytooltown.com',
+    site: siteUrl,
     items: toolsByDate.map((tool) => {
       const slug = tool.id.replace(/\.md$/, '');
       
@@ -59,7 +61,7 @@ export async function GET(context: APIContext) {
         title: tool.data.name,
         pubDate: new Date(tool.data.date_added),
         description: descParts.join('\n'),
-        link: `/tools/${slug}/`,
+        link: new URL(`/tools/${slug}/`, siteUrl).href,
         categories: tool.data.tags,
         author: `${tool.data.author_github}@github`,
       };
