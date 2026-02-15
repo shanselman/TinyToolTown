@@ -9,9 +9,17 @@ interface Props {
   language?: string;
   featured?: boolean;
   thumbnail?: string;
+  github_url?: string;
 }
 
-const { name, slug, tagline, author, author_github, tags, language, featured, thumbnail } = Astro.props;
+const { name, slug, tagline, author, author_github, tags, language, featured, thumbnail, github_url } = Astro.props;
+
+function getGitHubRepo(url?: string): string | null {
+  if (!url) return null;
+  const match = url.match(/github\.com\/([^\/]+\/[^\/]+)/);
+  return match ? match[1].replace(/\/$/, '') : null;
+}
+const repo = getGitHubRepo(github_url);
 
 const langColors: Record<string, string> = {
   'C#': '#178600',
@@ -60,6 +68,14 @@ const langColor = language ? langColors[language] || '#8b949e' : null;
         loading="lazy"
       />
       <span class="author-name" data-author-search={author.toLowerCase()}>{author}</span>
+      {repo && (
+        <img
+          src={`https://img.shields.io/github/stars/${repo}?style=flat&label=%E2%AD%90`}
+          alt="GitHub stars"
+          class="card-stars"
+          loading="lazy"
+        />
+      )}
     </div>
   </div>
 </a>
@@ -177,6 +193,12 @@ const langColor = language ? langColors[language] || '#8b949e' : null;
     color: var(--color-tag-text);
     border-radius: 50px;
     font-weight: 500;
+  }
+
+  .card-stars {
+    height: 18px;
+    flex-shrink: 0;
+    margin-left: auto;
   }
 
   .card-lang {

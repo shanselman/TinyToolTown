@@ -26,6 +26,12 @@ const langColors: Record<string, string> = {
 };
 
 const langColor = tool.data.language ? langColors[tool.data.language] || '#8b949e' : null;
+
+function getGitHubRepo(url: string): string | null {
+  const match = url.match(/github\.com\/([^\/]+\/[^\/]+)/);
+  return match ? match[1].replace(/\/$/, '') : null;
+}
+const repo = getGitHubRepo(tool.data.github_url);
 ---
 
 <BaseLayout
@@ -72,6 +78,11 @@ const langColor = tool.data.language ? langColors[tool.data.language] || '#8b949
               )}
               {tool.data.license && (
                 <span class="badge license-badge">📄 {tool.data.license}</span>
+              )}
+              {repo && (
+                <span class="badge star-badge" id="star-badge" data-repo={repo} style="display:none">
+                  <span class="star-icon">⭐</span> <span id="star-count">…</span>
+                </span>
               )}
             </div>
           </div>
@@ -236,6 +247,18 @@ const langColor = tool.data.language ? langColors[tool.data.language] || '#8b949
     width: 10px;
     height: 10px;
     border-radius: 50%;
+  }
+
+  .star-badge {
+    cursor: default;
+    background: #007ec6;
+    border-color: #007ec6;
+    color: #fff;
+  }
+
+  .star-icon {
+    font-size: 0.7rem;
+    line-height: 1;
   }
 
   .tool-tags {
@@ -419,3 +442,28 @@ const langColor = tool.data.language ? langColors[tool.data.language] || '#8b949
     .tool-content { padding: 1.5rem; }
   }
 </style>
+
+<script>
+  const badge = document.getElementById('star-badge');
+  if (badge) {
+    const repo = badge.dataset.repo;
+    fetch(`https://api.github.com/repos/${repo}`)
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(data => {
+        const count = data.stargazers_count;
+        let label;
+        if (count >= 1_000_000) {
+          const val = count / 1_000_000;
+          label = (val % 1 === 0 ? val : val.toFixed(1)) + 'M';
+        } else if (count >= 1_000) {
+          const val = count / 1_000;
+          label = (val % 1 === 0 ? val : val.toFixed(1)) + 'k';
+        } else {
+          label = count.toString();
+        }
+        document.getElementById('star-count')!.textContent = label;
+        badge.style.display = '';
+      })
+      .catch(() => {});
+  }
+</script>
