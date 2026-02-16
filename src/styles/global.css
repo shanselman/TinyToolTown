@@ -137,6 +137,10 @@
   color: #000000;
 }
 
+[data-theme="geocities"] .tool-content {
+  color: #000000 !important;
+}
+
 [data-theme="geocities"] .card-title {
   color: #800000 !important;
 }
