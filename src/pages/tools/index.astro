@@ -5,11 +5,24 @@ import Footer from '../../components/Footer.astro';
 import ToolCard from '../../components/ToolCard.astro';
 import TikTokView from '../../components/TikTokView.astro';
 import { getCollection } from 'astro:content';
+import { getGitHubRepo, fetchStarCounts } from '../../lib/github';
 
 const allTools = await getCollection('tools');
 const tools = allTools.sort((a, b) =>
   new Date(b.data.date_added).getTime() - new Date(a.data.date_added).getTime()
 );
+
+// Fetch GitHub star counts at build time
+const repoMap = new Map<string, string>(); // slug -> owner/repo
+for (const tool of tools) {
+  const repo = getGitHubRepo(tool.data.github_url);
+  if (repo) repoMap.set(tool.id, repo);
+}
+const starCounts = await fetchStarCounts([...repoMap.values()]);
+const toolStars = new Map<string, number>();
+for (const [slug, repo] of repoMap) {
+  toolStars.set(slug, starCounts.get(repo) || 0);
+}
 
 // Count tag frequency and split into popular (3+) and rest
 const tagCounts = new Map<string, number>();
@@ -49,6 +62,12 @@ const moreTags = [...tagCounts.entries()]
           autocomplete="off"
         />
       </div>
+      <div class="sort-bar" role="group" aria-label="Sort tools">
+        <span class="sort-label">Sort by</span>
+        <button class="sort-btn active" data-sort="newest">Newest</button>
+        <button class="sort-btn" data-sort="oldest">Oldest</button>
+        <button class="sort-btn" data-sort="stars">⭐ Stars</button>
+      </div>
       <div class="tags-filter" id="tags-filter">
         <button class="tag-btn active" data-tag="all">All</button>
         {popularTags.map(tag => (
@@ -73,6 +92,8 @@ const moreTags = [...tagCounts.entries()]
           data-tagline={tool.data.tagline.toLowerCase()}
           data-tags={tool.data.tags.map(t => t.toLowerCase()).join(',')}
           data-author={tool.data.author.toLowerCase()}
+          data-date-added={tool.data.date_added}
+          data-stars={toolStars.get(tool.id) || 0}
         >
           <ToolCard
             name={tool.data.name}
@@ -118,6 +139,7 @@ const moreTags = [...tagCounts.entries()]
   const totalCount = items.length;
 
   let activeTag = 'all';
+  let activeSort = 'newest';
 
   // "More ▾" expander
   if (moreToggle && moreTags) {
@@ -126,6 +148,23 @@ const moreTags = [...tagCounts.entries()]
       moreTags.style.display = visible ? 'none' : 'contents';
       moreToggle.textContent = visible ? 'More ▾' : 'Less ▴';
     });
+  }
+
+  function sortTools() {
+    const itemsArray = Array.from(grid.querySelectorAll('.tool-item')) as HTMLElement[];
+    itemsArray.sort((a, b) => {
+      if (activeSort === 'newest') {
+        return (b.dataset.dateAdded || '').localeCompare(a.dataset.dateAdded || '');
+      } else if (activeSort === 'oldest') {
+        return (a.dataset.dateAdded || '').localeCompare(b.dataset.dateAdded || '');
+      } else if (activeSort === 'stars') {
+        return (parseInt(b.dataset.stars || '0', 10)) - (parseInt(a.dataset.stars || '0', 10));
+      }
+      return 0;
+    });
+    for (const item of itemsArray) {
+      grid.appendChild(item);
+    }
   }
 
   function filterTools() {
@@ -156,10 +195,39 @@ const moreTags = [...tagCounts.entries()]
       : `Showing ${visible} of ${totalCount} tools`;
   }
 
+  // Sort button handler
+  document.querySelectorAll('.sort-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeSort = (btn as HTMLElement).dataset.sort || 'newest';
+      sortTools();
+      // Update URL param
+      const url = new URL(window.location.href);
+      if (activeSort === 'newest') {
+        url.searchParams.delete('sort');
+      } else {
+        url.searchParams.set('sort', activeSort);
+      }
+      history.replaceState(null, '', url.toString());
+    });
+  });
+
   // Pre-fill search from ?q= URL parameter, or activate tag from ?tag=
   const params = new URLSearchParams(window.location.search);
   const urlQ = params.get('q');
   const urlTag = params.get('tag');
+  const urlSort = params.get('sort');
+
+  // Apply sort from URL
+  if (urlSort && ['newest', 'oldest', 'stars'].includes(urlSort)) {
+    activeSort = urlSort;
+    document.querySelectorAll('.sort-btn').forEach(b => {
+      b.classList.toggle('active', (b as HTMLElement).dataset.sort === activeSort);
+    });
+    sortTools();
+  }
+
   if (urlQ) {
     search.value = urlQ;
     filterTools();
@@ -221,6 +289,42 @@ const moreTags = [...tagCounts.entries()]
   .search-box {
     position: relative;
     margin-bottom: 1rem;
+  }
+
+  .sort-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .sort-label {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-right: 0.25rem;
+  }
+
+  .sort-btn {
+    padding: 0.4rem 0.9rem;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 50px;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .sort-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .sort-btn.active {
+    background: var(--color-primary);
+    color: var(--color-bg);
+    border-color: var(--color-primary);
   }
 
   .search-icon {

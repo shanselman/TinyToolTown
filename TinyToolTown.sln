@@ -1,0 +1,36 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{07C2787E-EAC7-C090-1BA3-A61EC2A24D84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyToolSummarizer", "tools\TinyToolSummarizer\TinyToolSummarizer.csproj", "{B6641180-2E30-77BC-7F01-0AF16F928254}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyToolSubmitter", "tools\TinyToolSubmitter\TinyToolSubmitter.csproj", "{6951D53B-38E9-FF94-EA06-F891171DBE79}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B6641180-2E30-77BC-7F01-0AF16F928254}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6641180-2E30-77BC-7F01-0AF16F928254}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6641180-2E30-77BC-7F01-0AF16F928254}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6641180-2E30-77BC-7F01-0AF16F928254}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6951D53B-38E9-FF94-EA06-F891171DBE79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6951D53B-38E9-FF94-EA06-F891171DBE79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6951D53B-38E9-FF94-EA06-F891171DBE79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6951D53B-38E9-FF94-EA06-F891171DBE79}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B6641180-2E30-77BC-7F01-0AF16F928254} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
+		{6951D53B-38E9-FF94-EA06-F891171DBE79} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A38181A7-C0D0-4ADE-9185-5BE9D9F26F10}
+	EndGlobalSection
+EndGlobal
