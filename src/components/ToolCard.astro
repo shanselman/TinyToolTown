@@ -12,9 +12,10 @@ interface Props {
   featured?: boolean;
   thumbnail?: string;
   github_url?: string;
+  stars?: number;
 }
 
-const { name, slug, tagline, author, author_github, tags, language, featured, thumbnail, github_url } = Astro.props;
+const { name, slug, tagline, author, author_github, tags, language, featured, thumbnail, github_url, stars } = Astro.props;
 const repo = getGitHubRepo(github_url);
 
 const langColors: Record<string, string> = {
@@ -64,7 +65,9 @@ const langColor = language ? langColors[language] || '#8b949e' : null;
         loading="lazy"
       />
       <span class="author-name" data-author-search={author.toLowerCase()}>{author}</span>
-      {repo && (
+      {typeof stars === 'number' ? (
+        <span class="card-stars-count">⭐ {stars.toLocaleString()}</span>
+      ) : repo ? (
         <img
           src={`https://img.shields.io/github/stars/${repo}?style=flat&label=%E2%AD%90`}
           alt={`GitHub stars for ${name}`}
@@ -72,7 +75,7 @@ const langColor = language ? langColors[language] || '#8b949e' : null;
           loading="lazy"
           onerror="this.style.display='none'"
         />
-      )}
+      ) : null}
     </div>
   </div>
 </a>
@@ -238,5 +241,13 @@ const langColor = language ? langColors[language] || '#8b949e' : null;
     height: 18px;
     flex-shrink: 0;
     margin-left: auto;
+  }
+
+  .card-stars-count {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-left: auto;
+    flex-shrink: 0;
+  }
   }
 </style>

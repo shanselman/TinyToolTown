@@ -1,5 +1,15 @@
-import { describe, it, expect, vi } from 'vitest';
-import { getGitHubRepo, fetchStarCounts } from '../github';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { getGitHubRepo, fetchStarCounts, fetchFromApi } from '../github';
+import type { StarCache, FetchRequest } from '../github';
+
+// Mock the fs-based cache so tests don't touch disk
+vi.mock('node:fs', () => ({
+  readFileSync: vi.fn(() => '{}'),
+  writeFileSync: vi.fn(),
+  existsSync: vi.fn(() => false),
+}));
+
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 
 describe('getGitHubRepo', () => {
   it('extracts owner/repo from a standard GitHub URL', () => {
@@ -40,11 +50,17 @@ describe('getGitHubRepo', () => {
 });
 
 describe('fetchStarCounts', () => {
-  it('returns a map of repo to star count', async () => {
-    const mockResponse = { stargazers_count: 42 };
+  beforeEach(() => {
+    vi.mocked(existsSync).mockReturnValue(false);
+    vi.mocked(readFileSync).mockReturnValue('{}');
+  });
+
+  it('returns star count from API when cache is empty', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
-      json: async () => mockResponse,
+      status: 200,
+      headers: new Headers({ etag: '"abc123"' }),
+      json: async () => ({ stargazers_count: 42 }),
     } as Response);
 
     const result = await fetchStarCounts(['owner/repo']);
@@ -53,9 +69,50 @@ describe('fetchStarCounts', () => {
     vi.restoreAllMocks();
   });
 
-  it('returns 0 for failed requests', async () => {
+  it('returns star count from cache and sends conditional request', async () => {
+    vi.mocked(existsSync).mockReturnValue(true);
+    vi.mocked(readFileSync).mockReturnValue(
+      JSON.stringify({ 'owner/repo': { stars: 99, etag: '"old-etag"' } })
+    );
+    // 304 — cached value is still fresh
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: false,
+      status: 304,
+      headers: new Headers(),
+      json: async () => ({}),
+    } as Response);
+
+    const result = await fetchStarCounts(['owner/repo']);
+    expect(result.get('owner/repo')).toBe(99);
+
+    vi.restoreAllMocks();
+  });
+
+  it('updates cached value when API returns 200 with new data', async () => {
+    vi.mocked(existsSync).mockReturnValue(true);
+    vi.mocked(readFileSync).mockReturnValue(
+      JSON.stringify({ 'owner/repo': { stars: 50, etag: '"old"' } })
+    );
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({ etag: '"new"' }),
+      json: async () => ({ stargazers_count: 75 }),
+    } as Response);
+
+    const result = await fetchStarCounts(['owner/repo']);
+    expect(result.get('owner/repo')).toBe(75);
+    // Cache should have been written
+    expect(vi.mocked(writeFileSync)).toHaveBeenCalled();
+
+    vi.restoreAllMocks();
+  });
+
+  it('returns 0 for repos not in cache when API fails', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: false,
+      status: 403,
+      headers: new Headers(),
       json: async () => ({}),
     } as Response);
 
@@ -74,38 +131,74 @@ describe('fetchStarCounts', () => {
     vi.restoreAllMocks();
   });
 
-  it('deduplicates repos', async () => {
-    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-      ok: true,
-      json: async () => ({ stargazers_count: 10 }),
-    } as Response);
-
-    await fetchStarCounts(['owner/repo', 'owner/repo', 'owner/repo']);
-    expect(fetchSpy).toHaveBeenCalledTimes(1);
-
-    vi.restoreAllMocks();
-  });
-
   it('handles empty input', async () => {
     const result = await fetchStarCounts([]);
     expect(result.size).toBe(0);
   });
 
-  it('handles multiple repos', async () => {
-    vi.spyOn(globalThis, 'fetch').mockImplementation(async (url) => {
-      const urlStr = url instanceof Request ? url.url : url.toString();
-      if (urlStr.includes('repo-a')) {
-        return { ok: true, json: async () => ({ stargazers_count: 100 }) } as Response;
-      }
-      if (urlStr.includes('repo-b')) {
-        return { ok: true, json: async () => ({ stargazers_count: 200 }) } as Response;
-      }
-      return { ok: false, json: async () => ({}) } as Response;
-    });
+  it('reads old cache format (repo: number) and migrates', async () => {
+    vi.mocked(existsSync).mockReturnValue(true);
+    vi.mocked(readFileSync).mockReturnValue(JSON.stringify({ 'owner/repo': 42 }));
+    // 304 to keep cached value
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: false, status: 304, headers: new Headers(), json: async () => ({}),
+    } as Response);
 
-    const result = await fetchStarCounts(['owner/repo-a', 'owner/repo-b']);
-    expect(result.get('owner/repo-a')).toBe(100);
-    expect(result.get('owner/repo-b')).toBe(200);
+    const result = await fetchStarCounts(['owner/repo']);
+    expect(result.get('owner/repo')).toBe(42);
+
+    vi.restoreAllMocks();
+  });
+});
+
+describe('fetchFromApi (ETag support)', () => {
+  it('sends If-None-Match header when etag is provided', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: false, status: 304, headers: new Headers(), json: async () => ({}),
+    } as Response);
+
+    await fetchFromApi([{ repo: 'owner/repo', etag: '"my-etag"' }]);
+
+    const callHeaders = fetchSpy.mock.calls[0][1]?.headers as Record<string, string>;
+    expect(callHeaders['If-None-Match']).toBe('"my-etag"');
+
+    vi.restoreAllMocks();
+  });
+
+  it('does not send If-None-Match when no etag', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true, status: 200, headers: new Headers({ etag: '"new"' }),
+      json: async () => ({ stargazers_count: 10 }),
+    } as Response);
+
+    await fetchFromApi([{ repo: 'owner/repo' }]);
+
+    const callHeaders = fetchSpy.mock.calls[0][1]?.headers as Record<string, string>;
+    expect(callHeaders['If-None-Match']).toBeUndefined();
+
+    vi.restoreAllMocks();
+  });
+
+  it('returns null for 304 responses (cache still valid)', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: false, status: 304, headers: new Headers(), json: async () => ({}),
+    } as Response);
+
+    const results = await fetchFromApi([{ repo: 'owner/repo', etag: '"abc"' }]);
+    expect(results).toHaveLength(0); // 304 returns null, filtered out
+
+    vi.restoreAllMocks();
+  });
+
+  it('returns stars and new etag for 200 responses', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true, status: 200, headers: new Headers({ etag: '"new-etag"' }),
+      json: async () => ({ stargazers_count: 55 }),
+    } as Response);
+
+    const results = await fetchFromApi([{ repo: 'owner/repo', etag: '"old"' }]);
+    expect(results).toHaveLength(1);
+    expect(results[0]).toEqual({ repo: 'owner/repo', stars: 55, etag: '"new-etag"' });
 
     vi.restoreAllMocks();
   });
@@ -174,5 +267,49 @@ describe('sortTools (client-side logic)', () => {
     expect(sorted[0].stars).toBe(42);
     expect(sorted[1].stars).toBe(0);
     expect(sorted[2].stars).toBe(0);
+  });
+});
+
+describe('client-side star cache (localStorage TTL)', () => {
+  const STAR_CACHE_PREFIX = 'ttt_stars_';
+  const STAR_TTL_MS = 60 * 60 * 1000;
+
+  // Simulate the localStorage cache functions from the page script
+  function getCachedStars(storage: Map<string, string>, repo: string, now: number): number | null {
+    const raw = storage.get(STAR_CACHE_PREFIX + repo);
+    if (!raw) return null;
+    const entry = JSON.parse(raw);
+    if (now - entry.ts > STAR_TTL_MS) return null;
+    return entry.stars;
+  }
+
+  function setCachedStars(storage: Map<string, string>, repo: string, stars: number, now: number): void {
+    storage.set(STAR_CACHE_PREFIX + repo, JSON.stringify({ stars, ts: now }));
+  }
+
+  it('returns null for missing entries', () => {
+    const storage = new Map<string, string>();
+    expect(getCachedStars(storage, 'owner/repo', Date.now())).toBeNull();
+  });
+
+  it('returns cached stars within TTL', () => {
+    const storage = new Map<string, string>();
+    const now = Date.now();
+    setCachedStars(storage, 'owner/repo', 42, now);
+    expect(getCachedStars(storage, 'owner/repo', now + 1000)).toBe(42);
+  });
+
+  it('returns null for expired entries', () => {
+    const storage = new Map<string, string>();
+    const now = Date.now();
+    setCachedStars(storage, 'owner/repo', 42, now);
+    expect(getCachedStars(storage, 'owner/repo', now + STAR_TTL_MS + 1)).toBeNull();
+  });
+
+  it('returns stars at exact TTL boundary', () => {
+    const storage = new Map<string, string>();
+    const now = Date.now();
+    setCachedStars(storage, 'owner/repo', 42, now);
+    expect(getCachedStars(storage, 'owner/repo', now + STAR_TTL_MS)).toBe(42);
   });
 });

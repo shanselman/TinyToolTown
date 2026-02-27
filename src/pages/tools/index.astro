@@ -94,6 +94,7 @@ const moreTags = [...tagCounts.entries()]
           data-author={tool.data.author.toLowerCase()}
           data-date-added={tool.data.date_added}
           data-stars={toolStars.get(tool.id) || 0}
+          data-repo={repoMap.get(tool.id) || ''}
         >
           <ToolCard
             name={tool.data.name}
@@ -106,6 +107,7 @@ const moreTags = [...tagCounts.entries()]
             featured={tool.data.featured}
             thumbnail={tool.data.thumbnail}
             github_url={tool.data.github_url}
+            stars={toolStars.get(tool.id) ?? undefined}
           />
         </div>
       ))}
@@ -264,6 +266,82 @@ const moreTags = [...tagCounts.entries()]
     activeTag = btn.dataset.tag;
     filterTools();
   });
+
+  // --- Client-side lazy star refresh via IntersectionObserver + localStorage ---
+  const STAR_CACHE_PREFIX = 'ttt_stars_';
+  const STAR_TTL_MS = 60 * 60 * 1000; // 1 hour
+  const MAX_FETCHES = 30;
+  let fetchBudget = MAX_FETCHES;
+
+  function getCachedStars(repo: string): number | null {
+    try {
+      const raw = localStorage.getItem(STAR_CACHE_PREFIX + repo);
+      if (!raw) return null;
+      const entry = JSON.parse(raw);
+      if (Date.now() - entry.ts > STAR_TTL_MS) {
+        localStorage.removeItem(STAR_CACHE_PREFIX + repo);
+        return null;
+      }
+      return entry.stars;
+    } catch { return null; }
+  }
+
+  function setCachedStars(repo: string, stars: number): void {
+    try {
+      localStorage.setItem(STAR_CACHE_PREFIX + repo, JSON.stringify({ stars, ts: Date.now() }));
+    } catch { /* quota exceeded, ignore */ }
+  }
+
+  function updateCardStars(item: HTMLElement, stars: number): void {
+    item.dataset.stars = String(stars);
+    const countEl = item.querySelector('.card-stars-count');
+    if (countEl) countEl.textContent = `⭐ ${stars.toLocaleString()}`;
+  }
+
+  async function refreshStars(item: HTMLElement): Promise<void> {
+    const repo = item.dataset.repo;
+    if (!repo) return;
+
+    // Check localStorage first
+    const cached = getCachedStars(repo);
+    if (cached !== null) {
+      updateCardStars(item, cached);
+      return;
+    }
+
+    // Respect fetch budget
+    if (fetchBudget <= 0) return;
+    fetchBudget--;
+
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+      const res = await fetch(`https://api.github.com/repos/${repo}`, {
+        headers: { 'Accept': 'application/vnd.github.v3+json' },
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      if (!res.ok) return;
+      const data = await res.json();
+      const stars = data.stargazers_count || 0;
+      setCachedStars(repo, stars);
+      updateCardStars(item, stars);
+    } catch { /* network error, keep build-time value */ }
+  }
+
+  // Observe tool cards as they enter the viewport
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          observer.unobserve(entry.target);
+          refreshStars(entry.target as HTMLElement);
+        }
+      }
+    }, { rootMargin: '200px' });
+
+    items.forEach(item => observer.observe(item));
+  }
 </script>
 
 <style>
