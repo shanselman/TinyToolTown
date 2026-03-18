@@ -1,8 +1,8 @@
 ---
 name: "AntiStegText"
 tagline: "Vanilla javascript anti-steganography solution (character filtering) for text input."
-author: "vítězslav šimon"
-author_github: "httpsgithubcomVitSimon"
+author: "Vítězslav Šimon"
+author_github: "VitSimon"
 github_url: "https://github.com/VitSimon/AntiStegText"
 tags: ["web", "tiny", "tool", "url", "function"]
 language: "JavaScript"
