@@ -6,7 +6,7 @@ author_github: "jtracey93"
 github_url: "https://github.com/jtracey93/UrlClipboardLanguageCleaner"
 thumbnail: "/thumbnails/url-clipboard-language-cleaner.png"
 tags: ["cli", "clipboard", "productivity", "extension", "web"]
-language: "PowerShell & TypeScript"
+language: "PowerShell & JavaScript"
 license: "MIT"
 theme: "None"
 date_added: "2026-02-19"
