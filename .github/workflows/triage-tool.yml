@@ -14,7 +14,8 @@ jobs:
   triage:
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      contains(github.event.issue.labels.*.name, 'new-tool')
+      contains(github.event.issue.labels.*.name, 'new-tool') ||
+      startsWith(github.event.issue.title, '[Tool]')
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -53,6 +54,26 @@ jobs:
 
             console.log(`📋 Triaging ${issuesToTriage.length} issue(s)`);
 
+            async function ensureLabel(name, color, description) {
+              try {
+                await github.rest.issues.getLabel({ owner: context.repo.owner, repo: context.repo.repo, name });
+              } catch (err) {
+                if (err.status === 404) {
+                  await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name, color, description });
+                } else throw err;
+              }
+            }
+
+            async function removeLabelIfExists(issueNumber, labelName) {
+              try {
+                await github.rest.issues.removeLabel({ owner: context.repo.owner, repo: context.repo.repo, issue_number: issueNumber, name: labelName });
+              } catch (err) {
+                if (err.status !== 404) throw err;
+              }
+            }
+
+            await ensureLabel('ready-to-approve', '0075ca', 'Passes all automated checks — ready for maintainer approval');
+
             for (const issue of issuesToTriage) {
               const body = issue.body || '';
               const issueNum = issue.number;
@@ -68,8 +89,19 @@ jobs:
             const github_url = getField('GitHub Repository URL');
             const license = getField('License');
             const labelsToAdd = [];
-            const labelsToRemove = [];
             let needsAttention = false;
+
+            // Ensure new-tool label is set (may be missing if submitted outside the template)
+            const currentLabels = (issue.labels || []).map(l => l.name);
+            if (!currentLabels.includes('new-tool')) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNum,
+                labels: ['new-tool'],
+              });
+              console.log('  🏷️ Added missing new-tool label');
+            }
 
             console.log(`🔍 Triaging: ${name || issue.title} (#${issueNum})`);
 
@@ -169,6 +201,10 @@ jobs:
 
             if (needsAttention) {
               labelsToAdd.push('needs-attention');
+              await removeLabelIfExists(issueNum, 'ready-to-approve');
+            } else {
+              labelsToAdd.push('ready-to-approve');
+              await removeLabelIfExists(issueNum, 'needs-attention');
             }
 
             // Apply labels
@@ -182,6 +218,48 @@ jobs:
               });
             }
 
+            // Post automated comment for issues needing attention
+            if (needsAttention) {
+              const commentProblems = [];
+              const missingFieldNames = [];
+              if (!name) missingFieldNames.push('tool name');
+              if (!tagline) missingFieldNames.push('one-line description');
+              if (!github_url) missingFieldNames.push('GitHub URL');
+              if (!author) missingFieldNames.push('your name');
+              if (!author_github) missingFieldNames.push('GitHub username');
+              if (missingFieldNames.length > 0) {
+                commentProblems.push(`⚠️ **Missing required fields** — please make sure your submission includes: ${missingFieldNames.join(', ')}.`);
+              }
+              if (!repoExists && github_url) {
+                commentProblems.push(`❌ **Repository not accessible** — we couldn't reach \`${github_url}\`. Please make sure it's public and the URL is correct.`);
+              } else if (repoExists) {
+                if (!hasLicense) {
+                  commentProblems.push('📄 **No license detected** — without a license, the code is technically "all rights reserved" and we can\'t list it as open source. Please add a `LICENSE` file. [MIT License](https://choosealicense.com/licenses/mit/) is a great choice — GitHub makes it easy: go to your repo → **Add file** → **Create new file** → type `LICENSE` and GitHub will offer a template picker.');
+                }
+                if (!hasReadme) {
+                  commentProblems.push('📖 **No README found** — please add a `README.md` so people know what your tool does.');
+                }
+              }
+              if (commentProblems.length > 0) {
+                const { data: existingComments } = await github.rest.issues.listComments({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNum,
+                });
+                const alreadyCommented = existingComments.some(c =>
+                  c.user.login === 'github-actions[bot]' && c.body.includes('automated checks on your submission')
+                );
+                if (!alreadyCommented) {
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issueNum,
+                    body: `👋 Thanks for submitting **${name || 'your tool'}** to Tiny Tool Town!\n\nWe ran some automated checks on your submission and found a few things to address before we can approve it:\n\n${commentProblems.map(p => `- ${p}`).join('\n')}\n\nOnce you've made the updates, just let us know here and we'll take another look! 🏘️`,
+                  });
+                }
+              }
+            }
+
             // Log summary
             console.log('\n══════════════════════════════════');
             console.log(`  Tool: ${name || 'unknown'}`);
@@ -189,3 +267,4 @@ jobs:
             console.log(`  Needs attention: ${needsAttention}`);
             console.log('══════════════════════════════════');
             } // end for loop
+
