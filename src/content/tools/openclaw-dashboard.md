@@ -1,6 +1,6 @@
 ---
 name: "OpenClaw Dashboard"
-tagline: "A real-time, config-driven home network dashboard for AI agents - zero build step, 4 themes, vanilla JS + FastAPI (~500KB)"
+tagline: "A zero-build FastAPI dashboard starter for OpenClaw agents and self-hosted setups"
 author: "CK (Chandima Kulathilake)"
 author_github: "cknzraposo"
 github_url: "https://github.com/cknzraposo/openclaw-dashboard"
@@ -12,14 +12,12 @@ license: "MIT"
 theme: "terminal"
 date_added: "2026-03-10"
 featured: false
-ai_summary: "Keep tabs on your smart home and AI agent like a pro with a slick, no-fuss dashboard that updates live without any build headaches. It’s like your personal control center served up in a neat, lightweight package!"
-ai_features: ["🎨 Four stylish themes including dark bioluminescent glow", "🚀 Real-time streaming updates via Server-Sent Events", "🔧 Zero build step with vanilla JS and FastAPI backend", "🏠 Monitors everything from Spotify to Philips Hue lights and system health"]
+ai_summary: "A small, readable FastAPI dashboard you can clone and adapt for an OpenClaw agent or any self-hosted setup. It streams live status for things like host health, backups, music, Hue lights, and local AI services without needing a frontend build pipeline."
+ai_features: ["🚀 Live updates via Server-Sent Events", "🔧 Zero build step with FastAPI + vanilla JS", "🏠 Tracks host health, backups, music, lights, and local AI services", "🛠️ Designed to be forked and hacked on directly"]
 ---
 
-A tiny, self-hosted status dashboard that gives your AI agent (or just you) a live view of your home network - Spotify playback, Philips Hue lights, Ollama LLM servers, NAS media libraries, machine health, backups, and cron jobs. All streamed via Server-Sent Events.
+A small, self-hosted status dashboard that gives your AI agent - or just you - a live view of the systems it watches: machine health, backups, music playback, Philips Hue lights, local Ollama services, NAS media, cron jobs, and logs.
 
-Built it because my AI assistant (Percy) needed a way to see the state of everything it manages. Turns out a single-page dashboard with no npm, no React, no build step, and just Tailwind CDN + vanilla JS is surprisingly capable.
+I built it because my OpenClaw assistant needed a control surface that was easy to understand and easy to modify. So this repo stays deliberately simple: one Python app, static frontend files, Server-Sent Events for live updates, and no npm or frontend build step.
 
-Everything is config-driven: name your agent, pick a theme (bioluminescent, midnight, terminal, minimal), enable only the panels you have. No Hue bridge? No panel. Three machines instead of two? Three tabs.
-
-If you have an OpenClaw agent running, you can literally just say: "Set up a dashboard using this repo" and it does it.
+The right way to use it is to clone it, change a few values in `app.py` and `.env`, and shape it around your own stack. It is not trying to be a generic dashboard platform. It is a hackable starter that gets you to a useful dashboard fast.
