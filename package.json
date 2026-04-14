@@ -9,7 +9,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@astrojs/rss": "^4.0.15",
+    "@astrojs/rss": "^4.0.18",
     "astro": "^5.2.0",
     "rehype-sanitize": "^6.0.0"
   },
