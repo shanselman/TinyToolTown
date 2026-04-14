@@ -10,7 +10,7 @@ tags: ["icons", "emoji", "fun", "pixelated"]
 language: "react, typescript"
 license: "MIT"
 date_added: "2026-02-13"
-featured: true
+featured: false
 ai_summary: "Turn your wildest emoji dreams into adorable pixel art with the help of AI — just describe what you want and watch tiny masterpieces appear like magic."
 ai_features: ["🎨 AI-powered pixel art generation from text prompts", "✏️ Edit and customize your creations", "🖼️ Perfect for custom Slack emojis and icons", "🌐 Works right in your browser at smolmoji.com"]
 ---

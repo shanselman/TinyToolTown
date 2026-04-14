@@ -9,7 +9,7 @@ website_url: "https://github.com/LeeHolmes/matrix-tetromino"
 tags: ["screensaver", "matrix", "tetris"]
 language: "C++"
 date_added: "2026-02-16"
-featured: true
+featured: false
 ai_summary: "Dive into a hypnotic blend of falling Tetris blocks and cascading Matrix code that transforms your screen into a retro hacker's dream! It's the perfect way to geek out while your computer chills."
 ai_features: ["🕹️ Classic Tetris gameplay meets Matrix-style visuals", "🖥️ Dynamic screen saver for idle computers", "🎮 Nostalgic pixel art vibes", "🌌 Smooth animation that mesmerizes"]
 ---

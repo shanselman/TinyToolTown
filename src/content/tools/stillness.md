@@ -9,7 +9,7 @@ website_url: "https://ladynaggaga.github.io/Stillness/"
 tags: ["calm", "color", "click", "web"]
 language: "HTML, JS"
 date_added: "2026-02-14"
-featured: true
+featured: false
 ai_summary: "A calming browser coloring book that turns a noisy day into a click and paint mini-retreat, letting you flood regions, doodle with a soft brush, and drift off to ambient chimes while you color."
 ai_features: ["🖌️ Intuitive tools for fill brush gradient eraser and eyedropper", "🧩 Six handcrafted patterns including mandalas florals ocean and zentangle", "🎨 Curated 25 color palette with HSL sliders and dual gradient selector", "💾 Export PNG or SVG and save or resume progress from localStorage"]
 ---

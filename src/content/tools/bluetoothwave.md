@@ -9,7 +9,7 @@ tags: ["bluetooth", "audio", "windows", "system-tray"]
 language: "C++"
 license: "MIT"
 date_added: "2026-04-13"
-featured: false
+featured: true
 ---
 
 Bluetooth audio playback (A2DP Sink) connector for Windows 10 2004+ and Windows 11. Features A2DP Sink management, native language support, system tray integration, auto-reconnect, and a portable, zero-telemetry design. No installation required.
