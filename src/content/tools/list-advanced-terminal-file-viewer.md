@@ -12,10 +12,10 @@ date_added: "2026-05-04"
 featured: false
 ---
 
-This tools is inspired by a tool of the same name back my MSDOS days.
+This tiny-tool is inspired by a lost MS-DOS tool. 
 
-The tool called list has one purpose, 'list' the content of a file in a paged way with the ability to switched to EBCDIC mode (for file from the mainframe), as well as hexmode.
+The tool called 'list' has one purpose, to 'list' the content of a file in a coloured, paged way with the ability to switched between ASCII and EBCDIC mode (for files from the mainframe), as well as hex-mode for binary-files.
 
-Unique features, windows resizing and 'VI' style command interface
+While also providing syntax highlighting for C, C++, C#, Java, COBOL, Python, bash, powershell, PLI, JCL, Dockerfile, batch, sql, markdown, JSON, XML files.
 
-The tools is now cross platform, windows, mac and linux (x64)
+Unique features: windows terminal resizing and 'VI' style command interface
