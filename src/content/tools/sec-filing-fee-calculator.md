@@ -4,6 +4,7 @@ tagline: "Tiny SEC filing fee math with memo and CSV export, no spreadsheet tabs
 author: "Turner Levey"
 author_github: "Turner-Levey"
 github_url: "https://github.com/Turner-Levey/sec-filing-fee-calculator"
+thumbnail: "/thumbnails/sec-filing-fee-calculator.webp"
 website_url: "https://sec-filing-fee-calculator.vercel.app/"
 tags: ["sec", "calculator", "finance", "filing-fee", "csv"]
 language: "HTML"

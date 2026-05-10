@@ -4,6 +4,7 @@ tagline: "A simple html page allows to save text and have it in the clipboard in
 author: "Nicolas Deault"
 author_github: "dohsky"
 github_url: "https://github.com/dohsky/CopyToClipboard"
+thumbnail: "/thumbnails/copytoclipboard.webp"
 tags: ["clipboard", "multi cut and paste"]
 language: "html and Javascript"
 license: "MIT"
