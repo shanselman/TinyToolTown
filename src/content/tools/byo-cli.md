@@ -12,6 +12,8 @@ license: "MIT"
 theme: "minimal"
 date_added: "2026-05-02"
 featured: false
+ai_summary: "Turn your terminal chaos into smooth automation magic by saving and running your go-to commands, managing secrets locally, and ditching the hunt for lost workflows — all while boosting your developer productivity like a pro!"
+ai_features: ["⚡ Save and instantly rerun exact commands", "🔐 Securely manage environment secrets locally", "🚀 Automate repetitive workflows with ease", "🧠 Reduce context switching and speed up onboarding"]
 ---
 
 I built the BYO CLI because I wanted to keep everything I like about working in the terminal, but get rid of the friction that comes with it.

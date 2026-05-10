@@ -10,6 +10,8 @@ language: "Javascript"
 license: "MIT"
 date_added: "2026-05-05"
 featured: false
+ai_summary: "Turn your desktop into a stunning rotating gallery by streaming gorgeous shots from your favorite Pexels collections—effortlessly syncing with Mac or Windows apps to keep your background fresh and fabulous all day long!"
+ai_features: ["🎨 Seamless integration with Pexels API for endless beautiful wallpapers", "🖥️ Supports both Mac (Plash) and Windows (Lively) dynamic backgrounds", "🔄 Interactive on-desktop settings for easy slideshow setup", "🌍 Multi-language support and offline fallback for smooth vibes anywhere"]
 ---
 
 This web application provides the Pexels integration for Plash or Lively, allowing you to easily configure and display high-quality wallpapers.

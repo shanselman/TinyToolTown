@@ -10,6 +10,8 @@ language: "C#"
 license: "MIT"
 date_added: "2026-05-05"
 featured: false
+ai_summary: "Peek behind the AI coding curtain with a real-time proxy and dashboard that lets you spy on every API call, chat message, and tool interaction in your .NET-powered coding agent adventure — debugging just got way more fun and visual!"
+ai_features: ["🔥 Real-time interception of API requests and responses", "⚡ Chat-style conversation timeline for easy reading", "🎯 Detailed token usage and timing metrics", "🚀 MCP proxy observer for advanced tool call monitoring"]
 ---
 
 A real-time .NET proxy and dashboard for inspecting Claude Code API calls. Intercept, visualize, and analyze every request and response between Claude Code and the Anthropic API.

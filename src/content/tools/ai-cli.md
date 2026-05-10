@@ -9,6 +9,8 @@ language: "Go"
 license: "MIT"
 date_added: "2026-05-06"
 featured: false
+ai_summary: "Turn your natural language whims into actual shell commands with a clever AI sidekick that keeps safety in check—making terminal magic both effortless and cautious!"
+ai_features: ["🤖 Converts plain English into shell commands using powerful LLMs", "🛡️ Applies safety policies to prevent risky command execution", "⚡ Supports multiple AI providers including OpenAI and local servers", "💬 Interactive mode for chatting with your terminal assistant"]
 ---
 
 I keep using chatbots for the same kind of question, over and over. Not “how do I build a distributed system” questions. The small ones. The ones that should be muscle memory by now, except they aren’t.

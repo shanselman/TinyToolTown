@@ -11,6 +11,8 @@ language: "TypeScript"
 license: "MIT"
 date_added: "2026-05-06"
 featured: false
+ai_summary: "Wave goodbye to guesswork and hello to value-based pricing magic that uses AI to craft perfect price tiers for your consulting gigs — all for free and with zero backend hassle. It's like having a pricing wizard in your browser!"
+ai_features: ["🤖 AI-powered suggested pricing based on project value", "🎯 Two pricing curves for landing deals or aiming high", "🔒 Privacy-first with no server data retention", "🚀 Zero-cost AI via OpenRouter's free tier integration"]
 ---
 
 Value-Buddy helps consultants and freelancers stop guessing their project price. You describe what your work is worth to the client — not how long it takes — and it spits out three tiers of prices using one of two battle-tested curves: "Might As Well" (play it safe) or "Goldilocks" (go bold). Built on Jonathan Stark's value-pricing philosophy.

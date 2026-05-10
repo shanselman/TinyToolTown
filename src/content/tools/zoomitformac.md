@@ -10,6 +10,8 @@ language: "Swift"
 license: "MIT"
 date_added: "2026-05-05"
 featured: false
+ai_summary: "Zoom in, draw, record, and capture your screen like a pro with this sleek macOS menu bar app that brings powerful ZoomIt magic to your Mac — complete with live zoom, annotations, timers, and even panoramic screenshots!"
+ai_features: ["🔥 Freeze screen zoom and draw with colorful ink", "🎥 Record full display, window, or region with trimming", "🕒 Full-screen countdown break timer", "📸 Stitch scrolling captures into panoramic screenshots"]
 ---
 
 ZoomItMac is a native macOS menu bar app that brings [Sysinternals ZoomIt](https://learn.microsoft.com/en-us/sysinternals/downloads/zoomit) functionality to Mac.

@@ -12,6 +12,8 @@ license: "MIT"
 theme: "neon"
 date_added: "2026-05-06"
 featured: false
+ai_summary: "Wave goodbye to pesky PDF restrictions with a magical right-click unlock that frees your files instantly and locally—no subscriptions, no uploads, just pure unlocked PDF bliss right from your Mac Finder!"
+ai_features: ["✨ Unlock PDFs with a simple right-click in Finder", "🔒 Works fully offline to keep your files private", "📂 Batch unlock multiple PDFs at once", "🗃️ Non-destructive output keeps originals safe with unlocked copies"]
 ---
 
 You have a PDF you own - a bank statement, a scanned form, a manual - and you cannot copy text from it, print it, or merge it with another PDF because it's locked. Unlock My PDF is a 30-second install, free, fully-local tool that drops an Unlock PDF button into your right-click menu. 

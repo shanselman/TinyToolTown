@@ -11,6 +11,8 @@ language: "C#"
 license: "MIT"
 date_added: "2026-05-06"
 featured: false
+ai_summary: "Supercharge your WinUI 3 apps with a treasure trove of handy classes, controls, and styles that make building Windows desktop experiences a breeze and keep your code Native AOT friendly!"
+ai_features: ["🔥 Native AOT compatible for blazing fast apps", "⚡ Rich collection of reusable UI controls and styles", "🎯 Comprehensive docs and samples galore", "🚀 Ready-made templates to kickstart your projects"]
 ---
 
 DevWinUI is a comprehensive collection of libraries, components, styles, and tools designed to help you build powerful WinUI 3 applications quickly and efficiently. Whether you’re creating modern desktop experiences for Windows 10, Windows 11, or future versions, DevWinUI brings together everything you need to accelerate development and deliver exceptional results.

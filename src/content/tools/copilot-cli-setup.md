@@ -11,6 +11,8 @@ license: "MIT"
 theme: "terminal"
 date_added: "2026-05-07"
 featured: false
+ai_summary: "Get GitHub Copilot CLI up and running with just one PowerShell command—this script makes installing, configuring, and even updating a breeze so you can start coding smarter without the hassle!"
+ai_features: ["🚀 One-command setup from install to config", "🔄 Safe to rerun with smart update detection", "🖥️ Cross-platform support for Windows, macOS, and Linux", "🎨 Friendly CLI with colorful output and progress indicators"]
 ---
 
 An interactive, cross-platform PowerShell script that walks you through installing and configuring GitHub Copilot CLI on your machine. It handles prerequisites checking, installation (via winget, npm, or install script), VS Code setup with Copilot extensions, GitHub CLI, custom instructions templates, and authentication — all in a beautiful, guided 8-step flow.

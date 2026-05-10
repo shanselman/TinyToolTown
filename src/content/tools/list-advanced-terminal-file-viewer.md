@@ -10,6 +10,8 @@ language: "C#"
 license: "MIT"
 date_added: "2026-05-04"
 featured: false
+ai_summary: "Peek into your files like a coding ninja with this terminal viewer that’s bursting with syntax colors, hex mode, and built-in security scans that spot sneaky Unicode trickery — all wrapped up in a sleek, cross-platform package!"
+ai_features: ["🖥️ Interactive vi-style navigation with multi-file support", "🎨 Syntax highlighting for 18+ languages with smart word wrapping", "🔍 Real-time security scans for malicious Unicode and homograph attacks", "🔐 Hex dump and EBCDIC modes for deep file inspection"]
 ---
 
 This tools is inspired by a tool of the same name back my MSDOS days.

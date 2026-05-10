@@ -10,6 +10,8 @@ language: "html and Javascript"
 license: "MIT"
 date_added: "2026-05-05"
 featured: false
+ai_summary: "Snap up your frequently used text with a single click and zap it straight to your clipboard—no more endless retyping or hunting for that email or command snippet ever again!"
+ai_features: ["🔥 Super simple HTML page for quick text copying", "⚡ One-click clipboard magic in Chrome", "🎯 Perfect for repetitive text like emails, commands, and templates"]
 ---
 
 A simple html page, that you save locally and open locally, allows to save text and have it in the clipboard in one click. (has to be local, or hosted on https to push into clipboard)  

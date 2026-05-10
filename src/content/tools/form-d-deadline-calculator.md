@@ -12,6 +12,8 @@ license: "MIT"
 theme: "minimal"
 date_added: "2026-05-06"
 featured: false
+ai_summary: "Never miss a SEC Form D deadline again with this nifty browser-only calculator that handles holidays and weekends, gives you filing status, and even lets you export your memo and CSVs — all without a single signup or tracking cookie!"
+ai_features: ["🔥 15-day first-sale deadline countdown with holiday and weekend adjustments", "⚡ Compare actual filing date to deadline status", "🎯 Export deadline memos and CSV files for easy tracking", "🛡️ Runs fully in browser with zero tracking or signups"]
 ---
 
 Form D Deadline Calculator is a small local-first web tool for planning Regulation D Form D notice timing. Enter the first-sale date, optional actual filing date, EDGAR access status, prior notice or amendment date, and optional SEC closure dates, then copy a source-linked planning memo or CSV row.
