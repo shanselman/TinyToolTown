@@ -341,11 +341,15 @@ jobs:
                 });
 
                 let imageFromComment = null;
-                for (const comment of comments.data) {
-                  const commentBody = comment.body || '';
+                // Scan the issue body first, then any follow-up comments.
+                // Submitters often paste/upload images directly in the issue body,
+                // not in a comment, so missing the body was leaving tools thumbnail-less.
+                const bodySources = [{ body: issue.body || '' }, ...comments.data];
+                for (const src of bodySources) {
+                  const text = src.body || '';
                   // Match markdown images: ![alt](url) or HTML images: <img ... src="url" ...>
-                  const mdImg = commentBody.match(/!\[[^\]]*\]\((https?:\/\/[^)]+)\)/);
-                  const htmlImg = commentBody.match(/<img[^>]+src=["'](https?:\/\/[^"']+)["']/i);
+                  const mdImg = text.match(/!\[[^\]]*\]\((https?:\/\/[^)]+)\)/);
+                  const htmlImg = text.match(/<img[^>]+src=["'](https?:\/\/[^"']+)["']/i);
                   const uploadedImg = mdImg || htmlImg;
                   if (uploadedImg) {
                     imageFromComment = uploadedImg[1];
