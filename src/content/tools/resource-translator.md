@@ -8,6 +8,7 @@ website_url: "https://ievangelist.github.io/resource-translator"
 tags: ["github-action", "i18n", "localization", "translation", "azure"]
 language: "TypeScript"
 license: "MIT"
+thumbnail: "/thumbnails/resource-translator.webp"
 date_added: "2026-05-12"
 featured: false
 ---
