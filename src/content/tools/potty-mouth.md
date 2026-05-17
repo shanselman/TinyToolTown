@@ -12,6 +12,8 @@ license: "MIT"
 theme: "terminal"
 date_added: "2026-05-12"
 featured: false
+ai_summary: "Keep your GitHub issues and PRs squeaky clean with this fun profanity filter that replaces naughty words with emojis or asterisks—because even code deserves classy conversations!"
+ai_features: ["🤬 Supports over 4,900 swear words across 9 languages", "🔧 Easy GitHub Action drop-in for automatic filtering", "🎭 Customizable replacement strategies like emojis or asterisks", "📊 Generates detailed profanity filter reports for tracking"]
 ---
 
 Potty Mouth is a tiny GitHub Action that scans issues, pull requests, and comments for profane content, then rewrites matches using the replacement strategy you choose. It ships 4,900+ curated words across 9 languages, 14 replacement styles, and clean job summaries so maintainers can keep community spaces welcoming without babysitting every thread. It is built with .NET Native AOT, so it starts fast and runs dependency-free on GitHub-hosted runners.

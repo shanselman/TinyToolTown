@@ -11,6 +11,8 @@ license: "MIT"
 theme: "neon"
 date_added: "2026-05-11"
 featured: false
+ai_summary: "Snap any part of your screen and instantly drop it into your favorite AI chat like ChatGPT with just one hotkey—no fuss, no delays, pure productivity magic! Perfect for when words alone just won’t cut it."
+ai_features: ["🔥 One hotkey screen capture", "⚡ Auto-paste image plus prompt into ChatGPT, Claude, or Gemini", "🎯 Zero dependencies, tiny and efficient", "🚀 Built for seamless AI chat workflows"]
 ---
 
 CopyToLLM is a background Windows utility that captures any screen region and delivers it straight to your favorite AI chat - fully automated.

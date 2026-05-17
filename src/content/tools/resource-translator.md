@@ -11,6 +11,8 @@ license: "MIT"
 thumbnail: "/thumbnails/resource-translator.webp"
 date_added: "2026-05-12"
 featured: false
+ai_summary: "Turn your resource files into a global fiesta with automatic machine-translated PRs every time you commit—no more language barriers in your codebase! It’s like having a multilingual assistant on your dev team, 24/7."
+ai_features: ["🌍 Supports multiple resource file formats like .resx, .po, and .json", "🤖 Powered by Azure AI Translator with built-in retry and throttling", "🔄 Automatically opens translation pull requests for every commit", "⚙️ Configurable glossaries, tone, and industry settings for tailored translations"]
 ---
 
 Resource Translator is a GitHub Action that opens machine-translated pull requests for your resource files whenever they change. Point it at Azure AI Translator and it handles `.resx`, `.xliff`, `.po`, `.json`, `.ini`, and `.restext` automatically — drop it into any existing workflow, no extra services.

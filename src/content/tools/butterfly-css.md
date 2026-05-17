@@ -12,6 +12,8 @@ license: "agpl"
 theme: "candy"
 date_added: "2026-05-12"
 featured: false
+ai_summary: "Get your websites soaring with this ultra-light, attribute-driven CSS magic that makes layouts snap, animations fly, and styles pop instantly—no fuss, just pure web wizardry that feels like a breeze!"
+ai_features: ["🦋 Attribute-based responsive layouts for effortless design", "✨ Built-in animations like fly, spin, and confetti to wow visitors", "🎨 Clip-path shapes and pro dark mode for stylish visuals", "⚡ Tiny 35kb footprint for blazing-fast load times"]
 ---
 
 I started this project because I was tired of writing 10 classes just to make a button 'feel alive' or making a layout mobile-friendly. I wanted a framework that felt like magic—where you just type what you want (responsive, handdrawn, birthday-paper) and it just works.

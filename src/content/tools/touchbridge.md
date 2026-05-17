@@ -11,6 +11,8 @@ language: "Swift"
 license: "MIT"
 date_added: "2026-05-12"
 featured: false
+ai_summary: "Wave goodbye to typing passwords on your Mac and unlock sudo with a tap or a face scan on your phone or watch—no pricey Magic Keyboard needed! It's like having Touch ID magic in your pocket, making Mac security way cooler and way easier."
+ai_features: ["🔓 Use iPhone, Android, Apple Watch, Wear OS, or any browser to authenticate", "⚡ Instant sudo unlock with Face ID or fingerprint", "💸 No extra hardware or subscription fees", "🛡️ Secure local authentication using device secure enclaves"]
 ---
 
 Touch ID is great — until you don't have it. Mac mini, Mac Studio, and the new MacBook Neo (base variant) all ship without a built-in fingerprint sensor, so every `sudo` is a password prompt. Apple's official fix is a  $199 Magic Keyboard with Touch ID or up-selling to higher variant.                                                                                                                                                                           

@@ -12,6 +12,8 @@ license: "MIT"
 theme: "minimal"
 date_added: "2026-05-11"
 featured: false
+ai_summary: "Keep your cybersecurity deadlines in check with a local, no-login planner that matches your CVEs against CISA's Known Exploited Vulnerabilities and helps you prioritize fixes with easy exports and zero tracking fuss!"
+ai_features: ["🔥 Extracts and matches CVEs against a bundled CISA KEV catalog", "⚡ Flags ransomware-related vulnerabilities for quick attention", "🎯 Exports your remediation plan as Markdown, CSV, or ICS calendar files", "🚀 Runs fully in-browser with no tracking or signups needed"]
 ---
 
 CISA KEV Deadline Planner is a tiny local-first web tool for turning pasted CVEs, scanner output, or vulnerability-management notes into a prioritized Known Exploited Vulnerabilities planning queue. It extracts CVE IDs, matches them against a bundled CISA KEV catalog snapshot, sorts overdue and due-soon entries, flags CISA ransomware-campaign-use markers, and exports Markdown, CSV, or ICS planning holds.

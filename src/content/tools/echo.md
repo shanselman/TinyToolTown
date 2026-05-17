@@ -10,6 +10,8 @@ license: "MIT"
 theme: "newspaper"
 date_added: "2026-05-16"
 featured: false
+ai_summary: "Talk your way to faster typing with a lightning-quick, privacy-first push-to-talk assistant that transcribes and auto-translates your voice right where you need it—perfect for coding, writing, or bilingual brilliance!"
+ai_features: ["🔥 Blazing-fast local transcription using OpenAI Whisper", "🎙️ Push-to-talk with zero-latency \"Hot Mic\" recording", "🌍 Instant auto-translation to English from multiple languages", "🛠️ Customizable hotkeys and advanced voice activity detection for flawless input"]
 ---
 
 **What does it do?** Echo is a lightweight, open-source Windows utility that brings seamless push-to-talk dictation directly to your workflow. By pressing a global hotkey, you can speak and have your words instantly transcribed into any active window using completely local Whisper AI models.

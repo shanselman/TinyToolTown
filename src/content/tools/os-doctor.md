@@ -10,6 +10,8 @@ license: "GPL-3.0"
 theme: "matrix"
 date_added: "2026-05-12"
 featured: false
+ai_summary: "Peek under the hood of your Windows PC with a read-only AI sidekick that safely monitors hardware, processes, logs, and more—no risky commands, just pure diagnostics magic!"
+ai_features: ["🖥️ Read-only system diagnostics without write or command execution", "🔍 Search and analyze Windows event logs and services", "🌡️ Continuous hardware sensor monitoring with detailed stats", "🎮 NVIDIA GPU and DirectX info at your AI assistant's fingertips"]
 ---
 
 # What is this
