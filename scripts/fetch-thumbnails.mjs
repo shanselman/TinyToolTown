@@ -253,15 +253,33 @@ async function main() {
     try {
       let source = null;
 
-      const existingThumb = getExistingThumbnailFile(slug, fm.thumbnail);
-      if (existingThumb) {
-        source = {
-          url: existingThumb,
-          size: fs.statSync(existingThumb).size,
-          buffer: fs.readFileSync(existingThumb),
-        };
-        console.log('   ↺ Re-optimizing existing thumbnail');
-      } else {
+      if (fm.thumbnail_source) {
+        try {
+          const buffer = await downloadBuffer(fm.thumbnail_source);
+          source = {
+            url: fm.thumbnail_source,
+            size: buffer.length,
+            buffer,
+          };
+          console.log('   🖼️ Using thumbnail_source');
+        } catch (error) {
+          console.log(`   ⚠️ thumbnail_source failed (${error instanceof Error ? error.message : String(error)})`);
+        }
+      }
+
+      if (!source) {
+        const existingThumb = getExistingThumbnailFile(slug, fm.thumbnail);
+        if (existingThumb) {
+          source = {
+            url: existingThumb,
+            size: fs.statSync(existingThumb).size,
+            buffer: fs.readFileSync(existingThumb),
+          };
+          console.log('   ↺ Re-optimizing existing thumbnail');
+        }
+      }
+
+      if (!source) {
         source = await findBestReadmeImage(owner, repo);
       }
 

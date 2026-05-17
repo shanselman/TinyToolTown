@@ -222,6 +222,7 @@ jobs:
                 const description = getField(body, 'Tell us about your tool');
                 let github_url = getField(body, 'GitHub Repository URL');
                 const website_url = getField(body, 'Website or Demo URL \\(optional\\)');
+                const thumbnail_url = getField(body, 'Thumbnail image URL \\(optional\\)');
                 const author = getField(body, 'Your Name');
                 const author_github = getField(body, 'Your GitHub Username');
                 const tagsRaw = getField(body, 'Tags \\(comma-separated\\)');
@@ -269,6 +270,14 @@ jobs:
                   throw new Error('Website URL is invalid');
                 }
 
+                let thumbnail_url_clean = (thumbnail_url || '').replace(/<[^>]*>/g, '').trim();
+                if (!thumbnail_url_clean || thumbnail_url_clean === '_No response_') {
+                  thumbnail_url_clean = '';
+                }
+                if (thumbnail_url_clean && !/^https?:\/\/.+/.test(thumbnail_url_clean)) {
+                  throw new Error('Thumbnail URL is invalid');
+                }
+
                 const tagSynonyms = {
                   'devtools': 'developer-tools',
                   'dev-tools': 'developer-tools',
@@ -311,6 +320,9 @@ jobs:
                 if (website_url_clean) {
                   lines.push(`website_url: ${yamlStr(website_url_clean)}`);
                 }
+                if (thumbnail_url_clean) {
+                  lines.push(`thumbnail_source: ${yamlStr(thumbnail_url_clean)}`);
+                }
                 lines.push(`tags: [${tags.map(t => `"${t.replace(/"/g, '')}"`).join(', ')}]`);
                 if (language && language !== '_No response_') {
                   lines.push(`language: "${sanitize(language).replace(/"/g, '')}"`);
@@ -333,6 +345,29 @@ jobs:
                 const repoOwner = repoClean.split('/')[3];
                 const repoName = repoClean.split('/')[4];
                 let thumbPath = null;
+
+                if (thumbnail_url_clean) {
+                  try {
+                    const imgRes = await fetch(thumbnail_url_clean);
+                    if (imgRes.ok) {
+                      const contentLen = parseInt(imgRes.headers.get('content-length') || '0', 10);
+                      if (contentLen <= MAX_SOURCE_IMAGE_SIZE || contentLen === 0) {
+                        const buf = Buffer.from(await imgRes.arrayBuffer());
+                        if (buf.length >= MIN_IMAGE_SIZE && buf.length <= MAX_SOURCE_IMAGE_SIZE) {
+                          const optimized = await optimizeThumbnailBuffer(buf);
+                          const thumbFile = `${slug}${optimized.ext}`;
+                          const thumbDest = `public/thumbnails/${thumbFile}`;
+                          if (!fs.existsSync('public/thumbnails')) fs.mkdirSync('public/thumbnails', { recursive: true });
+                          removeStaleThumbnails(slug, thumbFile);
+                          fs.writeFileSync(thumbDest, optimized.buffer);
+                          thumbPath = `/thumbnails/${thumbFile}`;
+                        }
+                      }
+                    }
+                  } catch (e) {
+                    console.log(`Thumbnail URL failed for #${issue.number}: ${e.message}`);
+                  }
+                }
 
                 const comments = await github.rest.issues.listComments({
                   owner,

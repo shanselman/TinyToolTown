@@ -10,6 +10,7 @@ const tools = defineCollection({
     author_github: z.string(),
     github_url: z.string().url(),
     website_url: z.string().url().optional(),
+    thumbnail_source: z.string().url().optional(),
     thumbnail: z.string().optional(),
     tags: z.array(z.string()),
     language: z.string().optional(),

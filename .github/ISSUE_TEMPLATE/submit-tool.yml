@@ -50,6 +50,17 @@ body:
       placeholder: "https://your-tool.com"
 
   - type: input
+    id: thumbnail_url
+    attributes:
+      label: Thumbnail image URL (optional)
+      description: |
+        A direct URL to a screenshot or product image you want shown
+        on your tool's page. PNG / JPG / WebP / GIF, ideally at least
+        960×540. Leave blank to let us auto-pick the best image from
+        your README.
+      placeholder: "https://raw.githubusercontent.com/you/your-tool/main/docs/screenshot.png"
+
+  - type: input
     id: author
     attributes:
       label: Your Name
