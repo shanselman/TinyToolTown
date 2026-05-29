@@ -51,6 +51,9 @@ jobs:
               .replace(/[\r\n]+/g, ' ')
               .replace(/[^\x20-\x7E\xA0-\uFFFF]/g, '')
               .trim();
+            const slugify = (s) => sanitize(s).toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-|-$/g, '');
             const yamlStr = (s) => `"${sanitize(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
 
             const sanitizeHtml = (s) => {
@@ -239,16 +242,42 @@ jobs:
                   throw new Error('GitHub URL is invalid');
                 }
 
-                const slug = sanitize(name).toLowerCase()
-                  .replace(/[^a-z0-9]+/g, '-')
-                  .replace(/^-|-$/g, '');
-                if (!slug || slug.length < 2) {
+                const baseSlug = slugify(name);
+                if (!baseSlug || baseSlug.length < 2) {
                   throw new Error('Generated slug is invalid');
                 }
 
-                const filePath = `src/content/tools/${slug}.md`;
-                if (fs.existsSync(filePath)) {
-                  throw new Error(`Slug collision: ${slug}.md already exists`);
+                const languageAliases = {
+                  'javascript': 'js',
+                  'typescript': 'ts',
+                  'c#': 'csharp',
+                  'c++': 'cpp',
+                  'f#': 'fsharp',
+                };
+                const languageSlugRaw = slugify(language);
+                const languageSlug = languageAliases[languageSlugRaw] || languageSlugRaw;
+                const authorSlug = slugify(author_github);
+                const slugCandidates = [
+                  baseSlug,
+                  languageSlug ? `${baseSlug}-${languageSlug}` : '',
+                  authorSlug ? `${baseSlug}-${authorSlug}` : '',
+                ].filter(Boolean);
+                for (let i = 2; i <= 20; i++) {
+                  slugCandidates.push(`${baseSlug}-${i}`);
+                }
+
+                let slug = null;
+                let filePath = null;
+                for (const candidateSlug of slugCandidates) {
+                  const candidatePath = `src/content/tools/${candidateSlug}.md`;
+                  if (!fs.existsSync(candidatePath)) {
+                    slug = candidateSlug;
+                    filePath = candidatePath;
+                    break;
+                  }
+                }
+                if (!slug || !filePath) {
+                  throw new Error(`Slug collision: unable to allocate unique slug for ${baseSlug}.md`);
                 }
 
                 const repoMatch = github_url.match(/github\.com\/([^/]+)\/([^/]+)/);
