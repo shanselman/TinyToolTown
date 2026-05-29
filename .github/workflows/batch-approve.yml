@@ -86,7 +86,7 @@ jobs:
             const MAX_ANIMATED_OUTPUT_SIZE = 900 * 1024;
 
             const getField = (body, label) => {
-              const regex = new RegExp(`### ${label}\\s*\\n*\\s*([\\s\\S]*?)(?=\\n###|\\n\\n###|$)`);
+              const regex = new RegExp(`^### ${label}\\s*$\\n([\\s\\S]*?)(?=^### |\\Z)`, 'm');
               const match = (body || '').match(regex);
               return match ? match[1].trim() : '';
             };
