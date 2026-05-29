@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.18",
-    "astro": "^5.2.0",
+    "astro": "^6.4.2",
     "rehype-sanitize": "^6.0.0"
   },
   "optionalDependencies": {
