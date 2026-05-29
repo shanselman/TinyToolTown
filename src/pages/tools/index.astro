@@ -95,6 +95,7 @@ const moreTags = [...tagCounts.entries()]
           data-tagline={tool.data.tagline.toLowerCase()}
           data-tags={tool.data.tags.map(t => t.toLowerCase()).join(',')}
           data-author={tool.data.author.toLowerCase()}
+          data-author-github={tool.data.author_github.toLowerCase()}
           data-date-added={tool.data.date_added}
           data-stars={toolStars.get(tool.id) || 0}
           data-repo={repoMap.get(tool.id) || ''}
@@ -223,9 +224,10 @@ const moreTags = [...tagCounts.entries()]
       const tagline = el.dataset.tagline || '';
       const tags = (el.dataset.tags || '').toLowerCase();
       const author = el.dataset.author || '';
+      const authorGithub = el.dataset.authorGithub || '';
       const favorited = el.dataset.favorited === 'true';
 
-      const matchesSearch = !query || name.includes(query) || tagline.includes(query) || tags.includes(query) || author.includes(query);
+      const matchesSearch = !query || name.includes(query) || tagline.includes(query) || tags.includes(query) || author.includes(query) || authorGithub.includes(query);
       const matchesTag = activeTag === 'all' || tags.split(',').includes(activeTag);
       const matchesFavorites = !favoritesOnly || favorited;
 
