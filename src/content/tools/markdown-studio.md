@@ -1,13 +1,13 @@
 ---
 name: "Markdown Studio"
-tagline: "One page 100% local markdown viwer - File or Folder"
+tagline: "One page 100% local markdown viewer - File or Folder"
 author: "Madhu Ranjan"
 author_github: "ranjanmadhu"
 github_url: "https://github.com/ranjanmadhu/markdown-studio"
 thumbnail: "/thumbnails/markdown-studio.webp"
 website_url: "https://markdown-studio-612644835439.asia-southeast1.run.app/"
 thumbnail_source: "https://raw.githubusercontent.com/ranjanmadhu/markdown-studio/refs/heads/main/Screenshot%202026-06-10%20113337.png"
-tags: ["markdown", "markdown-viwer", "mermaid", "diagrams", "no-backend"]
+tags: ["markdown", "markdown-viewer", "mermaid", "diagrams", "no-backend"]
 language: "HTML"
 license: "MIT"
 theme: "minimal"
