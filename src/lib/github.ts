@@ -21,6 +21,37 @@ export function getGitHubRepo(url?: string): string | null {
   }
 }
 
+export interface ToolReleaseFields {
+  github_url?: string;
+  release_url?: string;
+  download_url?: string;
+}
+
+export interface ToolReleaseLink {
+  url: string;
+  label: 'Download' | 'Latest release' | 'View releases';
+  explicit: boolean;
+}
+
+export function getToolReleaseLink(tool: ToolReleaseFields): ToolReleaseLink | null {
+  if (tool.download_url) {
+    return { url: tool.download_url, label: 'Download', explicit: true };
+  }
+
+  if (tool.release_url) {
+    return { url: tool.release_url, label: 'Latest release', explicit: true };
+  }
+
+  const repo = getGitHubRepo(tool.github_url);
+  if (!repo) return null;
+
+  return {
+    url: `https://github.com/${repo}/releases/latest`,
+    label: 'View releases',
+    explicit: false,
+  };
+}
+
 export interface StarCacheEntry {
   stars: number;
   etag?: string;

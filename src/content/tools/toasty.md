@@ -6,6 +6,7 @@ author_github: "shanselman"
 github_url: "https://github.com/shanselman/toasty"
 thumbnail: "/thumbnails/toasty.webp"
 website_url: "https://github.com/shanselman/toasty/releases"
+release_url: "https://github.com/shanselman/toasty/releases/latest"
 tags: ["cli", "windows", "notifications", "tiny"]
 language: "C++"
 license: "MIT"

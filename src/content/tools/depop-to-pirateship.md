@@ -4,6 +4,7 @@ tagline: "Chrome extension to copy shipping addresses from Depop"
 author: "Scott Hanselman"
 author_github: "shanselman"
 github_url: "https://github.com/shanselman/depop-to-pirateship"
+release_url: "https://github.com/shanselman/depop-to-pirateship/releases/latest"
 thumbnail: "/thumbnails/depop-to-pirateship.webp"
 tags: ["browser-extension", "chrome", "shipping", "automation"]
 language: "JavaScript"
