@@ -45,9 +45,9 @@ adds profile content. Authors can claim and customize their page in two ways:
   with the bio, headline, links, notes, or featured groups they want.
 - Open a PR adding `src/content/authors/YOUR-GITHUB-USERNAME.md`.
 
-For safety, author-page customization requests should come from the matching
-GitHub account, or explain why the requester is authorized to make the change.
-Once accepted, the unclaimed notice disappears.
+For safety, author-page customization issues must come from the matching GitHub
+account. A GitHub Action marks matching claims `claim-verified` and mismatches
+`invalid-author-claim`. Once accepted, the unclaimed notice disappears.
 
 Example author profile:
 

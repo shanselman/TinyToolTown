@@ -63,7 +63,7 @@ New author pages start as **unclaimed automatic pages**. Want to claim and custo
 
 Open a [Claim or Customize an Author Page issue](https://github.com/shanselman/TinyToolTown/issues/new?template=customize-author.yml) and tell us what bio, headline, links, notes, or featured tool groups you want.
 
-For safety, the request should come from the same GitHub account as the author page being claimed. Once accepted, the unclaimed notice disappears and your profile content is shown.
+For safety, the issue must be opened from the same GitHub account as the author page being claimed. A GitHub Action marks matching claims `claim-verified` and marks mismatches `invalid-author-claim`. Once accepted, the unclaimed notice disappears and your profile content is shown.
 
 ### Option 2: Pull Request
 

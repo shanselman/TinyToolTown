@@ -15,7 +15,8 @@ body:
         If your page says **Unclaimed automatic page**, this issue is how you claim it.
 
         Use this form if you want to add a bio, headline, links, notes, or featured groups of tools.
-        For safety, requests should come from the same GitHub account as the author page you're claiming.
+        For safety, this issue must be opened from the same GitHub account as the author page you're claiming.
+        A workflow will mark claims as verified only when the issue author matches this username.
 
   - type: input
     id: github
@@ -84,7 +85,7 @@ body:
     attributes:
       label: Checklist
       options:
-        - label: I am requesting changes for my own GitHub author page, or I can explain why I am authorized to request them.
+        - label: I am signed in as the same GitHub account as the author page I am claiming.
           required: true
         - label: I understand maintainers may edit for length, clarity, and site fit.
           required: true

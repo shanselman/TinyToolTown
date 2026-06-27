@@ -1,0 +1,123 @@
+name: Validate Author Page Claim
+
+on:
+  issues:
+    types: [opened, edited, reopened, labeled]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  validate:
+    name: Verify claimant matches GitHub username
+    runs-on: ubuntu-latest
+    if: >-
+      contains(github.event.issue.labels.*.name, 'author-page') ||
+      (github.event.action == 'labeled' && github.event.label.name == 'author-page')
+    steps:
+      - name: Validate author-page claim
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue = context.payload.issue;
+            const body = issue.body || '';
+            const actor = (issue.user?.login || '').toLowerCase();
+
+            function extractIssueFormValue(markdown, label) {
+              const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+              const re = new RegExp(`###\\s+${escaped}\\s*\\n+([\\s\\S]*?)(?=\\n###\\s+|$)`, 'i');
+              const match = markdown.match(re);
+              if (!match) return '';
+              return match[1]
+                .replace(/<!--([\\s\\S]*?)-->/g, '')
+                .replace(/^_No response_$/gim, '')
+                .trim();
+            }
+
+            function normalizeHandle(value) {
+              return value
+                .split(/\r?\n/)[0]
+                .trim()
+                .replace(/^@/, '')
+                .replace(/^https:\/\/github\.com\//i, '')
+                .split(/[/?#]/)[0]
+                .toLowerCase();
+            }
+
+            const requested = normalizeHandle(extractIssueFormValue(body, 'GitHub username for this author page'));
+            const labels = issue.labels.map(label => typeof label === 'string' ? label : label.name);
+            const hasInvalid = labels.includes('invalid-author-claim');
+            const hasVerified = labels.includes('claim-verified');
+
+            async function ensureLabel(name, color, description) {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name });
+              } catch (error) {
+                if (error.status !== 404) throw error;
+                await github.rest.issues.createLabel({ owner, repo, name, color, description });
+              }
+            }
+
+            await ensureLabel('claim-verified', '0e8a16', 'Author-page claim opened by matching GitHub account');
+            await ensureLabel('invalid-author-claim', 'd73a4a', 'Author-page claim does not match issue author');
+
+            if (!requested) {
+              if (!hasInvalid) {
+                await github.rest.issues.addLabels({ owner, repo, issue_number: issue.number, labels: ['invalid-author-claim'] });
+              }
+              if (hasVerified) {
+                await github.rest.issues.removeLabel({ owner, repo, issue_number: issue.number, name: 'claim-verified' }).catch(() => {});
+              }
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issue.number,
+                body: '⚠️ I could not find the requested GitHub username in this author-page claim. Please use the **Claim or Customize an Author Page** issue form and include the GitHub username for the page you want to claim.',
+              });
+              core.setFailed('Missing GitHub username for author-page claim.');
+              return;
+            }
+
+            if (requested !== actor) {
+              if (!hasInvalid) {
+                await github.rest.issues.addLabels({ owner, repo, issue_number: issue.number, labels: ['invalid-author-claim'] });
+              }
+              if (hasVerified) {
+                await github.rest.issues.removeLabel({ owner, repo, issue_number: issue.number, name: 'claim-verified' }).catch(() => {});
+              }
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issue.number,
+                body: `⚠️ Author-page claims must be opened from the same GitHub account as the page being claimed.\n\nThis issue was opened by @${actor}, but it requests @${requested}.\n\nIf you are @${requested}, please open a new claim issue while signed in as @${requested}. If this is a special case, a maintainer can review it manually, but this claim is not automatically verified.`,
+              });
+              core.setFailed(`Claim mismatch: actor ${actor}, requested ${requested}`);
+              return;
+            }
+
+            if (hasInvalid) {
+              await github.rest.issues.removeLabel({ owner, repo, issue_number: issue.number, name: 'invalid-author-claim' }).catch(() => {});
+            }
+            if (!hasVerified) {
+              await github.rest.issues.addLabels({ owner, repo, issue_number: issue.number, labels: ['claim-verified'] });
+            }
+
+            const marker = '<!-- author-claim-verified -->';
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: issue.number,
+              per_page: 100,
+            });
+            const alreadyCommented = comments.some(comment => comment.body?.includes(marker));
+            if (!alreadyCommented) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issue.number,
+                body: `${marker}\n✅ Claim verified: this issue was opened by @${actor} for their own author page. Maintainers can now review the requested profile content.`,
+              });
+            }
