@@ -11,6 +11,7 @@ const currentPath = Astro.url.pathname;
     <nav class="nav" aria-label="Primary navigation">
       <div class="nav-links">
         <a href="/tools/" class:list={["nav-link", { active: currentPath.startsWith('/tools') }]}>Browse</a>
+        <a href="/authors/" class:list={["nav-link", { active: currentPath.startsWith('/authors') }]}>Authors</a>
         <a href="/favorites/" class:list={["nav-link", { active: currentPath.startsWith('/favorites') }]}>Favorites</a>
         <a href="/submit/" class:list={["nav-link", { active: currentPath === '/submit/' }]}>Submit</a>
         <a href="/about/" class:list={["nav-link", { active: currentPath === '/about/' }]}>About</a>
@@ -36,6 +37,7 @@ const currentPath = Astro.url.pathname;
   <div class="mobile-menu" id="mobile-menu" hidden>
     <div class="container mobile-menu-inner">
       <a href="/tools/" class:list={["mobile-nav-link", { active: currentPath.startsWith('/tools') }]}>Browse</a>
+      <a href="/authors/" class:list={["mobile-nav-link", { active: currentPath.startsWith('/authors') }]}>Authors</a>
       <a href="/favorites/" class:list={["mobile-nav-link", { active: currentPath.startsWith('/favorites') }]}>Favorites</a>
       <a href="/submit/" class:list={["mobile-nav-link", { active: currentPath === '/submit/' }]}>Submit</a>
       <a href="/about/" class:list={["mobile-nav-link", { active: currentPath === '/about/' }]}>About</a>

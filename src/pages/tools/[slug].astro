@@ -4,6 +4,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { getCollection, render } from 'astro:content';
 import { getGitHubRepo } from '../../lib/github';
+import { getAuthorPath, getAvatarUrl } from '../../lib/authors';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -19,6 +20,7 @@ const { tool } = Astro.props;
 const { Content } = await render(tool);
 const repo = getGitHubRepo(tool.data.github_url);
 const slug = tool.id.replace(/\.md$/, '');
+const authorPath = getAuthorPath(tool.data.author_github);
 
 function stripMarkdown(markdown: string) {
   return markdown
@@ -84,14 +86,14 @@ const ogImage = hasSocialCard ? `/social/${slug}.png` : undefined;
           <div class="tool-meta">
             <div class="tool-author">
               <img
-                src={`https://avatars.githubusercontent.com/${tool.data.author_github}?s=40`}
+                src={getAvatarUrl(tool.data.author_github, 40)}
                 alt={tool.data.author}
                 class="author-avatar"
                 loading="lazy"
                 decoding="async"
               />
               <div>
-                <a href={`/tools/?q=${encodeURIComponent(tool.data.author.toLowerCase())}`} class="author-name">{tool.data.author}</a>
+                <a href={authorPath} class="author-name">{tool.data.author}</a>
               </div>
             </div>
 

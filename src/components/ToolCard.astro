@@ -1,5 +1,6 @@
 ---
 import { getGitHubRepo } from '../lib/github';
+import { getAuthorPath, getAvatarUrl } from '../lib/authors';
 
 interface Props {
   name: string;
@@ -17,6 +18,7 @@ interface Props {
 
 const { name, slug, tagline, author, author_github, tags, language, featured, thumbnail, github_url, stars } = Astro.props;
 const repo = getGitHubRepo(github_url);
+const authorPath = getAuthorPath(author_github);
 
 const langColors: Record<string, string> = {
   'C#': '#178600',
@@ -31,14 +33,15 @@ const langColors: Record<string, string> = {
 const langColor = language ? langColors[language] || '#8b949e' : null;
 ---
 
-<article class="tool-card-shell" data-tool-card data-tool={slug}>
+<article class:list={["tool-card-shell", { featured }]} data-tool-card data-tool={slug}>
   <button class="tool-favorite-btn" data-tool={slug} data-tool-name={name} type="button" aria-pressed="false" aria-label={`Add ${name} to favorites`}>
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
     </svg>
   </button>
 
-  <a href={`/tools/${slug}/`} class:list={["tool-card", { featured }]}>
+  <a href={`/tools/${slug}/`} class="tool-card-link" aria-label={`View ${name}`}></a>
+  <div class:list={["tool-card", { featured }]}>
     <div class="card-thumbnail">
       {thumbnail ? (
         <img
@@ -73,13 +76,13 @@ const langColor = language ? langColors[language] || '#8b949e' : null;
       </div>
       <div class="card-author">
         <img
-          src={`https://avatars.githubusercontent.com/${author_github}?s=24`}
+          src={getAvatarUrl(author_github, 24)}
           alt={author}
           class="author-avatar"
           loading="lazy"
           decoding="async"
         />
-        <span class="author-name" data-author-search={author.toLowerCase()}>{author}</span>
+        <a href={authorPath} class="author-name">{author}</a>
         {typeof stars === 'number' ? (
           <span class="card-stars-count">⭐ {stars.toLocaleString()}</span>
         ) : repo ? (
@@ -94,7 +97,7 @@ const langColor = language ? langColors[language] || '#8b949e' : null;
         ) : null}
       </div>
     </div>
-  </a>
+  </div>
 </article>
 
 <script>
@@ -149,14 +152,6 @@ const langColor = language ? langColors[language] || '#8b949e' : null;
     });
   });
 
-  document.querySelectorAll('.author-name[data-author-search]').forEach(el => {
-    el.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      window.location.href = `/tools/?q=${encodeURIComponent((el as HTMLElement).dataset.authorSearch!)}`;
-    });
-  });
-
   updateCardFavoriteStates();
   window.addEventListener(FAVORITES_CHANGED_EVENT, updateCardFavoriteStates);
 </script>
@@ -167,6 +162,18 @@ const langColor = language ? langColors[language] || '#8b949e' : null;
     height: 100%;
   }
 
+  .tool-card-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: var(--radius-lg);
+  }
+
+  .tool-card-link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+  }
+
   .tool-card {
     display: flex;
     flex-direction: column;
@@ -175,12 +182,11 @@ const langColor = language ? langColors[language] || '#8b949e' : null;
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: all 0.3s ease;
-    text-decoration: none;
     color: var(--color-text);
     height: 100%;
   }
 
-  .tool-card:hover {
+  .tool-card-shell:hover .tool-card {
     transform: translateY(-4px);
     border-color: var(--color-primary);
     box-shadow: 0 8px 30px rgba(255, 137, 6, 0.15);
@@ -248,7 +254,7 @@ const langColor = language ? langColors[language] || '#8b949e' : null;
     transition: transform 0.3s ease;
   }
 
-  .tool-card:hover .card-thumbnail img {
+  .tool-card-shell:hover .card-thumbnail img {
     transform: scale(1.05);
   }
 
@@ -338,6 +344,9 @@ const langColor = language ? langColors[language] || '#8b949e' : null;
     margin-top: 0.5rem;
     padding-top: 0.75rem;
     border-top: 1px solid var(--color-border);
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
   }
 
   .author-avatar {
@@ -349,7 +358,8 @@ const langColor = language ? langColors[language] || '#8b949e' : null;
   .author-name {
     font-size: 0.8rem;
     color: var(--color-text-muted);
-    cursor: pointer;
+    text-decoration: none;
+    pointer-events: auto;
   }
 
   .author-name:hover {
