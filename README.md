@@ -57,7 +57,7 @@ Why did you build it? Why is it delightful?
 
 Author pages are generated from the `author_github` value on each tool. You do **not** need to create a separate author file to get a page — submit one accepted tool and your author page exists automatically.
 
-New author pages start as **unclaimed automatic pages**. Want to claim and customize yours? You have two options:
+New author pages start as **unclaimed automatic pages** with a clearly marked AI-generated summary based on accepted Tiny Tool Town submissions. Want to claim it, remove the AI-generated summary, and customize yours? You have two options:
 
 ### Option 1: Author Page Issue
 

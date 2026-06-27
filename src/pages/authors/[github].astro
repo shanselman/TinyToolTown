@@ -107,7 +107,26 @@ function formatDate(value: string) {
           <a href={`https://github.com/${author.github}`} target="_blank" rel="noopener">@{author.github}</a>
         </p>
         <p class="headline">{headline}</p>
-        <p class="intro">{intro}</p>
+        {isClaimed ? (
+          <p class="intro">{intro}</p>
+        ) : (
+          <div class="copilot-summary author-copilot-summary" role="region" aria-label="AI-generated author summary by GitHub Copilot">
+            <div class="copilot-header">
+              <div class="copilot-label">
+                <svg class="copilot-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L14.09 8.26L20 9.27L15.55 13.97L16.91 20L12 16.9L7.09 20L8.45 13.97L4 9.27L9.91 8.26L12 2Z" fill="currentColor" />
+                </svg>
+                <span class="copilot-title">Copilot says:</span>
+                <span class="copilot-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.09 8.26L20 9.27L15.55 13.97L16.91 20L12 16.9L7.09 20L8.45 13.97L4 9.27L9.91 8.26L12 2Z"/></svg>
+                  AI-generated
+                </span>
+              </div>
+            </div>
+            <p class="copilot-text">{intro}</p>
+            <p class="copilot-disclaimer">This author summary was generated from accepted Tiny Tool Town submissions. Claim this page to replace it with your own bio, links, notes, and featured tool groups.</p>
+          </div>
+        )}
         <div class="author-actions">
           <a href={`https://github.com/${author.github}`} class="btn btn-primary" target="_blank" rel="noopener">GitHub profile</a>
           <a href={authorFeedPath} class="btn btn-secondary">RSS feed</a>
@@ -131,7 +150,7 @@ function formatDate(value: string) {
           <h2>Are you @{author.github}?</h2>
           <p>
             This page was generated automatically from accepted Tiny Tool Town submissions.
-            Claim it by opening an author-page issue from your GitHub account, then add a bio, links, notes, and featured tool groups.
+            Claim it by opening an author-page issue from your GitHub account, then replace the AI-generated summary with your own bio, links, notes, and featured tool groups.
           </p>
         </div>
         <a href={customizeUrl} class="btn btn-primary" target="_blank" rel="noopener">Claim @{author.github}</a>
@@ -320,6 +339,71 @@ function formatDate(value: string) {
     color: var(--color-text-muted);
     line-height: 1.8;
     max-width: 780px;
+  }
+
+  /* Copilot AI Author Summary — shown only until the page is claimed/customized */
+  .copilot-summary {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.06), rgba(59, 130, 246, 0.06));
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-left: 4px solid rgb(139, 92, 246);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    margin: 1rem 0 0;
+    max-width: 780px;
+    position: relative;
+  }
+
+  .copilot-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .copilot-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .copilot-icon {
+    color: rgb(139, 92, 246);
+    flex-shrink: 0;
+  }
+
+  .copilot-title {
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: rgb(139, 92, 246);
+    letter-spacing: -0.01em;
+  }
+
+  .copilot-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.2rem 0.6rem;
+    background: rgba(139, 92, 246, 0.15);
+    color: rgb(167, 139, 250);
+    border-radius: 50px;
+    font-weight: 700;
+    margin-left: auto;
+  }
+
+  .copilot-text {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin: 0;
+    font-style: italic;
+  }
+
+  .copilot-disclaimer {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    opacity: 0.65;
+    margin: 1rem 0 0;
+    font-style: italic;
   }
 
   .author-actions {
