@@ -75,14 +75,16 @@ const langColor = language ? langColors[language] || '#8b949e' : null;
         )}
       </div>
       <div class="card-author">
-        <img
-          src={getAvatarUrl(author_github, 24)}
-          alt={author}
-          class="author-avatar"
-          loading="lazy"
-          decoding="async"
-        />
-        <a href={authorPath} class="author-name">{author}</a>
+        <a href={authorPath} class="author-link" aria-label={`View author page for ${author}`}>
+          <img
+            src={getAvatarUrl(author_github, 24)}
+            alt=""
+            class="author-avatar"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="author-name">{author}</span>
+        </a>
         {typeof stars === 'number' ? (
           <span class="card-stars-count">⭐ {stars.toLocaleString()}</span>
         ) : repo ? (
@@ -355,16 +357,32 @@ const langColor = language ? langColors[language] || '#8b949e' : null;
     border-radius: 50%;
   }
 
-  .author-name {
-    font-size: 0.8rem;
+  .author-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
     color: var(--color-text-muted);
     text-decoration: none;
     pointer-events: auto;
+    position: relative;
+    z-index: 3;
   }
 
-  .author-name:hover {
+  .author-name {
+    font-size: 0.8rem;
+  }
+
+  .author-link:hover .author-name,
+  .author-link:focus-visible .author-name {
     text-decoration: underline;
     color: var(--color-primary);
+  }
+
+  .author-link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: 999px;
   }
 
   .card-stars {
