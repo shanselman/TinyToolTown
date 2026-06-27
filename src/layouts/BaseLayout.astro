@@ -3,6 +3,8 @@ interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  rssHref?: string;
+  rssTitle?: string;
   theme?: string;
 }
 
@@ -10,6 +12,8 @@ const {
   title = "Tiny Tool Town 🏘️",
   description = "A delightful showcase for free, fun & open source tiny tools. Stupid-delightful software made with love.",
   ogImage = "/og-image.png",
+  rssHref,
+  rssTitle,
   theme
 } = Astro.props;
 
@@ -62,6 +66,7 @@ const ogImageType = ogImageExt === 'jpg' || ogImageExt === 'jpeg'
 
   <!-- RSS Feed -->
   <link rel="alternate" type="application/rss+xml" title="Tiny Tool Town" href="/rss.xml" />
+  {rssHref && <link rel="alternate" type="application/rss+xml" title={rssTitle || title} href={rssHref} />}
 
   <!-- Prevent theme flash: apply saved/tool theme before paint -->
   <script is:inline define:vars={{ theme }}>

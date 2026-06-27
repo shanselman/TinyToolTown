@@ -26,6 +26,7 @@ const profile = customAuthorProfiles[author.github];
 const intro = profile?.intro || buildAuthorIntro(author);
 const headline = profile?.headline || `${author.toolCount} ${author.toolCount === 1 ? 'tiny tool' : 'tiny tools'} by ${author.name}`;
 const metaDescription = `${author.name} (@${author.github}) has ${author.toolCount} ${author.toolCount === 1 ? 'tool' : 'tools'} in Tiny Tool Town. ${author.tags.slice(0, 4).map(tag => tag.name).join(', ')}.`;
+const authorFeedPath = `/rss/authors/${author.github}.xml`;
 
 const repoMap = new Map<string, string>();
 for (const tool of author.tools) {
@@ -55,7 +56,12 @@ function formatDate(value: string) {
 }
 ---
 
-<BaseLayout title={`${author.name} (@${author.github}) - Tiny Tool Town`} description={metaDescription}>
+<BaseLayout
+  title={`${author.name} (@${author.github}) - Tiny Tool Town`}
+  description={metaDescription}
+  rssHref={authorFeedPath}
+  rssTitle={`${author.name}'s Tiny Tool Town tools`}
+>
   <Header />
 
   <main id="main" class="container">
@@ -86,6 +92,7 @@ function formatDate(value: string) {
         <p class="intro">{intro}</p>
         <div class="author-actions">
           <a href={`https://github.com/${author.github}`} class="btn btn-primary" target="_blank" rel="noopener">GitHub profile</a>
+          <a href={authorFeedPath} class="btn btn-secondary">RSS feed</a>
           <a href="#tools" class="btn btn-secondary">{author.toolCount} {author.toolCount === 1 ? 'tool' : 'tools'}</a>
         </div>
       </div>
