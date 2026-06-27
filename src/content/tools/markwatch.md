@@ -13,4 +13,4 @@ ai_summary: "A stunning analog stopwatch that keeps your talks on track with col
 ai_features: ["⏱️ Gorgeous analog clock face that looks great on any screen", "🚦 Color-coded visual feedback warns you when youre running long", "🎤 Purpose-built for presentations and conference talks", "✨ Clean React and TypeScript build with responsive design"]
 ---
 
-A gorgeous analog stopwatch for when you're giving a talk and need to keep track of time. Color-coded visual feedback tells you when you're running long. Built with React and TypeScript. Looks great on any screen.
+An analog stopwatch for talks, demos, and workshops where you need time remaining visible at a glance. Color-coded zones help you see when you're on pace or running long. Built with React and TypeScript.

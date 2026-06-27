@@ -5,7 +5,7 @@ author: "Scott Hanselman"
 author_github: "shanselman"
 github_url: "https://github.com/shanselman/toasty"
 thumbnail: "/thumbnails/toasty.webp"
-website_url: "https://github.com/shanselman/toasty/releases"
+release_url: "https://github.com/shanselman/toasty/releases/latest"
 tags: ["cli", "windows", "notifications", "tiny"]
 language: "C++"
 license: "MIT"
@@ -15,4 +15,4 @@ ai_summary: "A delightfully tiny 229 KB CLI that pops Windows toast notification
 ai_features: ["🤖 One-click hook install for Claude, Copilot, Gemini, and Codex agents", "🔍 Auto-detects which AI agent called it and applies the right icon", "📦 Zero dependencies and just 229 KB of pure notification goodness", "⚡ Auto-registers on first run so setup is literally one command"]
 ---
 
-Send toast notifications from your terminal. Perfect for scripts, CI pipelines, or just telling yourself "build done!" in style. Under 229 KB. No dependencies. Just vibes.
+Send Windows toast notifications from your terminal. Useful for scripts, CI pipelines, and long-running agent tasks that need a "build done" nudge. Under 229 KB, with no runtime dependencies.

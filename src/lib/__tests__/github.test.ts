@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getGitHubRepo, fetchStarCounts, fetchFromApi } from '../github';
+import { getGitHubRepo, getToolReleaseLink, fetchStarCounts, fetchFromApi } from '../github';
 import type { StarCache, FetchRequest } from '../github';
 
 // Mock the fs-based cache so tests don't touch disk
@@ -46,6 +46,47 @@ describe('getGitHubRepo', () => {
 
   it('handles URLs with extra path segments', () => {
     expect(getGitHubRepo('https://github.com/owner/repo/tree/main')).toBe('owner/repo');
+  });
+});
+
+describe('getToolReleaseLink', () => {
+  it('prefers explicit download URLs', () => {
+    expect(getToolReleaseLink({
+      github_url: 'https://github.com/owner/repo',
+      release_url: 'https://github.com/owner/repo/releases/latest',
+      download_url: 'https://example.com/tool.zip',
+    })).toEqual({
+      url: 'https://example.com/tool.zip',
+      label: 'Download',
+      explicit: true,
+    });
+  });
+
+  it('uses explicit release URLs before GitHub fallbacks', () => {
+    expect(getToolReleaseLink({
+      github_url: 'https://github.com/owner/repo',
+      release_url: 'https://github.com/owner/repo/releases/latest',
+    })).toEqual({
+      url: 'https://github.com/owner/repo/releases/latest',
+      label: 'Latest release',
+      explicit: true,
+    });
+  });
+
+  it('falls back to GitHub latest releases without claiming a download', () => {
+    expect(getToolReleaseLink({
+      github_url: 'https://github.com/owner/repo',
+    })).toEqual({
+      url: 'https://github.com/owner/repo/releases/latest',
+      label: 'View releases',
+      explicit: false,
+    });
+  });
+
+  it('does not create fallbacks for non-GitHub URLs', () => {
+    expect(getToolReleaseLink({
+      github_url: 'https://gitlab.com/owner/repo',
+    })).toBeNull();
   });
 });
 

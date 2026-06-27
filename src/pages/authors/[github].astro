@@ -6,6 +6,8 @@ import ToolCard from '../../components/ToolCard.astro';
 import { getCollection } from 'astro:content';
 import { buildAuthorIntro, buildAuthors, customAuthorProfiles, getAvatarUrl, normalizeGitHubHandle, slugForTool, type AuthorProfile } from '../../lib/authors';
 import { fetchStarCounts, getGitHubRepo } from '../../lib/github';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 
 export async function getStaticPaths() {
   const tools = await getCollection('tools');
@@ -38,6 +40,8 @@ const intro = profile?.intro || buildAuthorIntro(author);
 const headline = profile?.headline || `${author.toolCount} ${author.toolCount === 1 ? 'tiny tool' : 'tiny tools'} by ${displayName}`;
 const metaDescription = `${displayName} (@${author.github}) has ${author.toolCount} ${author.toolCount === 1 ? 'tool' : 'tools'} in Tiny Tool Town. ${author.tags.slice(0, 4).map(tag => tag.name).join(', ')}.`;
 const authorFeedPath = `/rss/authors/${author.github}.xml`;
+const authorSocialPath = `/social/authors/${author.github}.png`;
+const hasAuthorSocialCard = existsSync(join(process.cwd(), 'public', 'social', 'authors', `${author.github}.png`));
 const customizeUrl = `https://github.com/shanselman/TinyToolTown/issues/new?template=customize-author.yml&title=${encodeURIComponent(`[Author] @${author.github}`)}`;
 const profileLinks = [
   ...(profile?.website_url ? [{ label: 'Website', url: profile.website_url }] : []),
@@ -76,6 +80,7 @@ function formatDate(value: string) {
 <BaseLayout
   title={`${displayName} (@${author.github}) - Tiny Tool Town`}
   description={metaDescription}
+  {...(hasAuthorSocialCard ? { ogImage: authorSocialPath } : {})}
   rssHref={authorFeedPath}
   rssTitle={`${displayName}'s Tiny Tool Town tools`}
 >
@@ -109,7 +114,7 @@ function formatDate(value: string) {
         <p class="intro">{intro}</p>
         <div class="author-actions">
           <a href={`https://github.com/${author.github}`} class="btn btn-primary" target="_blank" rel="noopener">GitHub profile</a>
-          <a href={authorFeedPath} class="btn btn-secondary">RSS feed</a>
+          <a href={authorFeedPath} class="btn btn-secondary">Author RSS</a>
           <a href="#tools" class="btn btn-secondary">{author.toolCount} {author.toolCount === 1 ? 'tool' : 'tools'}</a>
           <a href={customizeUrl} class="btn btn-secondary" target="_blank" rel="noopener">Customize this page</a>
         </div>

@@ -4,6 +4,7 @@ tagline: "Click your Windows desktop wallpaper to peek at it - just like macOS S
 author: "Scott Hanselman"
 author_github: "shanselman"
 github_url: "https://github.com/shanselman/PeekDesktop"
+release_url: "https://github.com/shanselman/PeekDesktop/releases/latest"
 thumbnail: "/thumbnails/peekdesktop.gif"
 tags: ["windows", "desktop", "utility", "tray", "productivity"]
 language: "C#"

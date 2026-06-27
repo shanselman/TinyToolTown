@@ -42,6 +42,8 @@ author: "Your Name"
 author_github: "your-username"
 github_url: "https://github.com/you/your-tool"
 website_url: "https://optional-demo.com"
+release_url: "https://github.com/you/your-tool/releases/latest"
+download_url: "https://example.com/your-tool.zip"
 tags: ["cli", "fun", "tiny"]
 language: "Python"
 license: "MIT"
@@ -52,6 +54,8 @@ featured: false
 A few sentences about your tool. What does it do?
 Why did you build it? Why is it delightful?
 ```
+
+`release_url` and `download_url` are optional. Use `download_url` only for a direct download you control; otherwise, a GitHub repo automatically gets a "View releases" link without implying a binary exists.
 
 ## Author Pages
 

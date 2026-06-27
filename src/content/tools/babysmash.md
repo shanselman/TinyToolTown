@@ -4,6 +4,7 @@ tagline: "The classic game for small kids — smash the keyboard!"
 author: "Scott Hanselman"
 author_github: "shanselman"
 github_url: "https://github.com/shanselman/babysmash"
+release_url: "https://github.com/shanselman/babysmash/releases/latest"
 thumbnail: "/thumbnails/babysmash.webp"
 website_url: "https://www.babysmash.com"
 tags: ["game", "kids", "fun", "desktop"]
@@ -15,4 +16,4 @@ ai_summary: "Let your tiny tots turn your keyboard into a colorful, giggly playg
 ai_features: ["🎨 Colorful shapes with happy faces", "🔤 Letters and numbers with text-to-speech", "🔊 Fun sounds and giggles", "🔒 Locks out system keys to prevent accidental exits"]
 ---
 
-The OG tiny tool. Let your baby smash the keyboard and watch colorful shapes, letters, and numbers fly across the screen. Every key does something delightful. No way to break anything. Pure joy for tiny humans.
+The OG tiny tool. Let a small kid smash the keyboard and watch colorful shapes, letters, and numbers fly across the screen. Every key does something playful while the app keeps system shortcuts out of the way.

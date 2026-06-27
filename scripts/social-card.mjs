@@ -172,7 +172,7 @@ export async function renderSocialCard(tool, { rootDir = process.cwd() } = {}) {
     `;
 
   const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}" font-family="Inter, Arial, sans-serif">
       <defs>
         <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#101424" />
@@ -210,6 +210,94 @@ export async function renderSocialCard(tool, { rootDir = process.cwd() } = {}) {
       <text x="735" y="486" font-size="20" font-weight="500" fill="#d7def7">${escapeXml(SITE_URL.replace('https://', ''))}</text>
 
       ${previewBlock}
+    </svg>
+  `;
+
+  return sharp(Buffer.from(svg))
+    .png({ compressionLevel: 9, quality: 90 })
+    .toBuffer();
+}
+
+/**
+ * Render a social card PNG for an author showcase page.
+ *
+ * @param {object} author
+ * @param {string} author.github
+ * @param {string} author.name
+ * @param {string} [author.headline]
+ * @param {string} [author.intro]
+ * @param {number} author.toolCount
+ * @param {{name: string, count?: number}[]} [author.tags]
+ * @param {{name: string, count?: number}[]} [author.languages]
+ * @param {{name: string}} [author.latestTool]
+ * @returns {Promise<Buffer>} PNG buffer.
+ */
+export async function renderAuthorSocialCard(author) {
+  const accent = '#ff8906';
+  const title = author.name || `@${author.github}`;
+  const descriptionSource = author.headline || author.intro || `${title} has shared ${author.toolCount} tiny tools in Tiny Tool Town.`;
+  const description = truncate(descriptionSource, 170);
+  const toolCountLabel = `${author.toolCount} ${author.toolCount === 1 ? 'tiny tool' : 'tiny tools'}`;
+  const tags = Array.isArray(author.tags) ? author.tags.map((tag) => tag.name || tag).filter(Boolean) : [];
+  const languages = Array.isArray(author.languages) ? author.languages.map((language) => language.name || language).filter(Boolean) : [];
+  const tagText = tags.slice(0, 4).join(' • ');
+  const languageText = languages.slice(0, 3).join(' • ');
+  const latestTool = author.latestTool?.name ? `Latest: ${author.latestTool.name}` : 'Author showcase';
+
+  const titleLines = wrapLines(title, 20, 2);
+  const descriptionLines = wrapLines(description, 44, 3);
+
+  const titleSvg = titleLines
+    .map((line, index) => `<text x="72" y="${166 + (index * 70)}" font-size="58" font-weight="850" fill="#ffffff">${escapeXml(line)}</text>`)
+    .join('');
+
+  const descriptionSvg = descriptionLines
+    .map((line, index) => `<text x="72" y="${322 + (index * 36)}" font-size="28" font-weight="500" fill="#d7def7">${escapeXml(line)}</text>`)
+    .join('');
+
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}" font-family="Inter, Arial, sans-serif">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#101424" />
+          <stop offset="58%" stop-color="#23113c" />
+          <stop offset="100%" stop-color="${accent}" />
+        </linearGradient>
+        <linearGradient id="accentFade" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="${accent}" stop-opacity="0.98" />
+          <stop offset="100%" stop-color="${accent}" stop-opacity="0.16" />
+        </linearGradient>
+        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#050816" flood-opacity="0.45" />
+        </filter>
+      </defs>
+
+      <rect width="${WIDTH}" height="${HEIGHT}" fill="url(#bg)" />
+      <circle cx="1060" cy="120" r="190" fill="rgba(255,255,255,0.08)" />
+      <circle cx="1040" cy="552" r="150" fill="rgba(255,255,255,0.06)" />
+      <rect x="0" y="0" width="710" height="${HEIGHT}" fill="url(#accentFade)" opacity="0.18" />
+
+      <rect x="72" y="58" width="244" height="40" rx="20" fill="rgba(255,255,255,0.12)" />
+      <text x="98" y="84" font-size="20" font-weight="700" fill="#ffffff">Tiny Tool Town author</text>
+
+      ${titleSvg}
+      ${descriptionSvg}
+
+      <g filter="url(#shadow)">
+        <rect x="770" y="108" width="330" height="330" rx="44" fill="rgba(255,255,255,0.10)" stroke="rgba(255,255,255,0.18)" />
+        <circle cx="935" cy="235" r="82" fill="#ffffff" opacity="0.95" />
+        <text x="935" y="263" text-anchor="middle" font-size="86" font-weight="900" fill="#101424">@</text>
+        <text x="935" y="358" text-anchor="middle" font-size="30" font-weight="800" fill="#ffffff">${escapeXml(`@${author.github}`)}</text>
+        <text x="935" y="394" text-anchor="middle" font-size="24" font-weight="600" fill="#d7def7">${escapeXml(toolCountLabel)}</text>
+      </g>
+
+      <rect x="72" y="500" width="282" height="50" rx="25" fill="#ffffff" />
+      <text x="102" y="533" font-size="22" font-weight="800" fill="#101424">View author tools</text>
+
+      <text x="72" y="580" font-size="22" font-weight="650" fill="#ffffff">${escapeXml(latestTool)}</text>
+      <text x="770" y="492" font-size="24" font-weight="750" fill="#ffffff">${escapeXml(tagText || 'Tiny software for real humans')}</text>
+      <text x="770" y="528" font-size="20" font-weight="600" fill="#d7def7">${escapeXml(languageText || SITE_URL.replace('https://', ''))}</text>
+      <text x="770" y="564" font-size="20" font-weight="500" fill="#d7def7">${escapeXml(SITE_URL.replace('https://', ''))}</text>
     </svg>
   `;
 
