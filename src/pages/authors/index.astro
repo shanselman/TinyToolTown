@@ -26,7 +26,11 @@ function formatDate(value: string) {
       <p class="eyebrow">Makers in town</p>
       <h1>Author directory</h1>
       <p class="hero-copy">
-        Real pages for the people building Tiny Tool Town: {authors.length} authors and {totalTools} tiny tools.
+        Real maker pages for the people building Tiny Tool Town: {authors.length} authors and {totalTools} tiny tools.
+        If one of your tools is listed, your author page already exists automatically.
+      </p>
+      <p class="hero-copy small">
+        Want to personalize yours? Open a <a href="https://github.com/shanselman/TinyToolTown/issues/new?template=customize-author.yml" target="_blank" rel="noopener">Customize an Author Page issue</a> or send a PR with an author profile.
       </p>
     </section>
 
@@ -138,6 +142,16 @@ function formatDate(value: string) {
     color: var(--color-text-muted);
     font-size: 1.15rem;
     line-height: 1.7;
+  }
+
+  .hero-copy.small {
+    font-size: 1rem;
+    margin-top: 0.75rem;
+  }
+
+  .hero-copy a {
+    color: var(--color-accent);
+    font-weight: 700;
   }
 
   .authors-filter {

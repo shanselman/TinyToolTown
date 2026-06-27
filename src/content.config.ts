@@ -25,4 +25,25 @@ const tools = defineCollection({
   }),
 });
 
-export const collections = { tools };
+const authors = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/authors' }),
+  schema: z.object({
+    github: z.string().optional(),
+    name: z.string().optional(),
+    headline: z.string().optional(),
+    intro: z.string().optional(),
+    website_url: z.string().url().optional(),
+    links: z.array(z.object({
+      label: z.string(),
+      url: z.string().url(),
+    })).optional(),
+    notes: z.array(z.string()).optional(),
+    sections: z.array(z.object({
+      title: z.string(),
+      description: z.string(),
+      toolSlugs: z.array(z.string()),
+    })).optional(),
+  }),
+});
+
+export const collections = { tools, authors };

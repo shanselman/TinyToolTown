@@ -9,6 +9,11 @@ body:
         ## Welcome to Tiny Tool Town! 🏘️
         Fill out this form and we'll review your tool. Once approved, it'll show up on the site automatically!
 
+        Your GitHub username also creates your author page automatically:
+        `https://www.tinytooltown.com/authors/YOUR-GITHUB-USERNAME/`
+
+        After your tool is accepted, you can use the **Customize an Author Page** issue form if you want to add a bio, links, or featured groups of your tools.
+
   - type: input
     id: name
     attributes:

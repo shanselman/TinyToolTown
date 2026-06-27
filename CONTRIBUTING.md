@@ -26,6 +26,52 @@ To qualify, a tool should be:
 Each repository can be listed once — duplicate submissions of an already-listed
 repo are detected automatically and won't create a second page.
 
+### Author pages
+
+Every accepted tool automatically creates or updates an author page based on the
+`author_github` value in the tool submission:
+
+```text
+https://www.tinytooltown.com/authors/YOUR-GITHUB-USERNAME/
+```
+
+Author pages collect all tools for that GitHub handle, plus tags, languages,
+latest additions, GitHub avatar, and an author-specific RSS feed.
+
+Authors can customize their page in two ways:
+
+- Open a [Customize an Author Page issue](https://github.com/shanselman/TinyToolTown/issues/new?template=customize-author.yml)
+  with the bio, headline, links, notes, or featured groups they want.
+- Open a PR adding `src/content/authors/YOUR-GITHUB-USERNAME.md`.
+
+For safety, author-page customization requests should come from the matching
+GitHub account, or explain why the requester is authorized to make the change.
+
+Example author profile:
+
+```markdown
+---
+github: "janedev"
+name: "Jane Developer"
+headline: "Tiny CLI tools, weird browser experiments, and delightful automation."
+website_url: "https://janedev.example"
+links:
+  - label: "Blog"
+    url: "https://janedev.example/blog"
+notes:
+  - "I like tiny tools that do one thing well."
+sections:
+  - title: "Terminal helpers"
+    description: "Small command-line tools for daily development papercuts."
+    toolSlugs:
+      - "my-cli-tool"
+---
+I make small tools that scratch very specific itches.
+```
+
+The profile file customizes the author page, but the tool list remains generated
+from accepted Tiny Tool Town submissions.
+
 ## Improving the Site
 
 This is an [Astro](https://astro.build) static site.
@@ -66,6 +112,7 @@ CI (`.github/workflows/ci.yml`) runs the same three commands on every PR.
 ### Project layout
 
 - `src/content/tools/*.md` — one markdown file per tool. Schema in `src/content.config.ts`.
+- `src/content/authors/*.md` — optional author-page customizations. Author pages still exist automatically without these files.
 - `src/pages/`, `src/components/`, `src/layouts/` — Astro pages, components, and layouts.
 - `src/lib/` — shared helpers (and `__tests__/` for unit tests).
 - `scripts/` — Node maintenance scripts (thumbnails, stars, social cards, the

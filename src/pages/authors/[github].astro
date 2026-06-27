@@ -4,7 +4,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import ToolCard from '../../components/ToolCard.astro';
 import { getCollection } from 'astro:content';
-import { buildAuthorIntro, buildAuthors, customAuthorProfiles, getAvatarUrl, slugForTool } from '../../lib/authors';
+import { buildAuthorIntro, buildAuthors, customAuthorProfiles, getAvatarUrl, normalizeGitHubHandle, slugForTool, type AuthorProfile } from '../../lib/authors';
 import { fetchStarCounts, getGitHubRepo } from '../../lib/github';
 
 export async function getStaticPaths() {
@@ -22,11 +22,28 @@ if (!author) {
   throw new Error(`Author not found: ${Astro.params.github}`);
 }
 
-const profile = customAuthorProfiles[author.github];
+const profileEntries = await getCollection('authors');
+const contentProfileEntry = profileEntries.find(entry => {
+  const handle = entry.data.github || entry.id.replace(/\.md$/, '');
+  return normalizeGitHubHandle(handle) === author.github;
+});
+const contentProfile = contentProfileEntry ? {
+  ...contentProfileEntry.data,
+  github: normalizeGitHubHandle(contentProfileEntry.data.github || contentProfileEntry.id.replace(/\.md$/, '')),
+  intro: contentProfileEntry.data.intro || contentProfileEntry.body.trim(),
+} satisfies AuthorProfile : undefined;
+const profile = contentProfile || customAuthorProfiles[author.github];
+const displayName = profile?.name || author.name;
 const intro = profile?.intro || buildAuthorIntro(author);
-const headline = profile?.headline || `${author.toolCount} ${author.toolCount === 1 ? 'tiny tool' : 'tiny tools'} by ${author.name}`;
-const metaDescription = `${author.name} (@${author.github}) has ${author.toolCount} ${author.toolCount === 1 ? 'tool' : 'tools'} in Tiny Tool Town. ${author.tags.slice(0, 4).map(tag => tag.name).join(', ')}.`;
+const headline = profile?.headline || `${author.toolCount} ${author.toolCount === 1 ? 'tiny tool' : 'tiny tools'} by ${displayName}`;
+const metaDescription = `${displayName} (@${author.github}) has ${author.toolCount} ${author.toolCount === 1 ? 'tool' : 'tools'} in Tiny Tool Town. ${author.tags.slice(0, 4).map(tag => tag.name).join(', ')}.`;
 const authorFeedPath = `/rss/authors/${author.github}.xml`;
+const customizeUrl = `https://github.com/shanselman/TinyToolTown/issues/new?template=customize-author.yml&title=${encodeURIComponent(`[Author] @${author.github}`)}`;
+const profileLinks = [
+  ...(profile?.website_url ? [{ label: 'Website', url: profile.website_url }] : []),
+  ...(profile?.links || []),
+];
+const profileNotes = profile?.notes || [];
 
 const repoMap = new Map<string, string>();
 for (const tool of author.tools) {
@@ -40,7 +57,7 @@ for (const [slug, repo] of repoMap) {
 }
 
 const toolsBySlug = new Map(author.tools.map(tool => [slugForTool(tool), tool]));
-const profileSections = profile?.sections
+const profileSections = (profile?.sections || [])
   .map(section => ({
     ...section,
     tools: section.toolSlugs.map(slug => toolsBySlug.get(slug)).filter((tool): tool is typeof author.tools[number] => Boolean(tool)),
@@ -57,10 +74,10 @@ function formatDate(value: string) {
 ---
 
 <BaseLayout
-  title={`${author.name} (@${author.github}) - Tiny Tool Town`}
+  title={`${displayName} (@${author.github}) - Tiny Tool Town`}
   description={metaDescription}
   rssHref={authorFeedPath}
-  rssTitle={`${author.name}'s Tiny Tool Town tools`}
+  rssTitle={`${displayName}'s Tiny Tool Town tools`}
 >
   <Header />
 
@@ -76,7 +93,7 @@ function formatDate(value: string) {
     <section class:list={["author-hero", { "custom-hero": Boolean(profile) }]}>
       <img
         src={getAvatarUrl(author.github, 240)}
-        alt={author.name}
+        alt={displayName}
         class="author-avatar"
         width="120"
         height="120"
@@ -84,7 +101,7 @@ function formatDate(value: string) {
       />
       <div class="author-hero-copy">
         <p class="eyebrow">Author showcase</p>
-        <h1>{author.name}</h1>
+        <h1>{displayName}</h1>
         <p class="handle">
           <a href={`https://github.com/${author.github}`} target="_blank" rel="noopener">@{author.github}</a>
         </p>
@@ -94,13 +111,21 @@ function formatDate(value: string) {
           <a href={`https://github.com/${author.github}`} class="btn btn-primary" target="_blank" rel="noopener">GitHub profile</a>
           <a href={authorFeedPath} class="btn btn-secondary">RSS feed</a>
           <a href="#tools" class="btn btn-secondary">{author.toolCount} {author.toolCount === 1 ? 'tool' : 'tools'}</a>
+          <a href={customizeUrl} class="btn btn-secondary" target="_blank" rel="noopener">Customize this page</a>
         </div>
+        {profileLinks.length > 0 && (
+          <div class="profile-links" aria-label="Author links">
+            {profileLinks.map(link => (
+              <a href={link.url} target="_blank" rel="noopener">{link.label}</a>
+            ))}
+          </div>
+        )}
       </div>
     </section>
 
-    {profile && (
+    {profileNotes.length > 0 && (
       <section class="profile-notes" aria-label="Workbench notes">
-        {profile.notes.map(note => (
+        {profileNotes.map(note => (
           <p>{note}</p>
         ))}
       </section>
@@ -287,6 +312,23 @@ function formatDate(value: string) {
     gap: 0.75rem;
     flex-wrap: wrap;
     margin-top: 1.5rem;
+  }
+
+  .profile-links {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .profile-links a {
+    color: var(--color-accent);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .profile-links a:hover {
+    text-decoration: underline;
   }
 
   .profile-notes {

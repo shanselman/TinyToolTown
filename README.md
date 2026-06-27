@@ -12,6 +12,14 @@ Tiny Tool Town is a community-driven directory of small, delightful, open-source
 
 ## Submit Your Tool
 
+Every accepted tool also creates an **author page** automatically. If your GitHub username is `your-username`, your page will be:
+
+```text
+https://www.tinytooltown.com/authors/your-username/
+```
+
+That page collects all of your Tiny Tool Town tools, your GitHub avatar, tags, languages, latest additions, and a personal RSS feed.
+
 ### Option 1: GitHub Issue (Easy)
 1. [Open a new issue](https://github.com/shanselman/TinyToolTown/issues/new?template=submit-tool.yml)
 2. Fill out the form
@@ -44,6 +52,44 @@ featured: false
 A few sentences about your tool. What does it do?
 Why did you build it? Why is it delightful?
 ```
+
+## Author Pages
+
+Author pages are generated from the `author_github` value on each tool. You do **not** need to create a separate author file to get a page — submit one accepted tool and your author page exists automatically.
+
+Want to customize it? You have two options:
+
+### Option 1: Author Page Issue
+
+Open a [Customize an Author Page issue](https://github.com/shanselman/TinyToolTown/issues/new?template=customize-author.yml) and tell us what bio, headline, links, notes, or featured tool groups you want.
+
+For safety, the request should come from the same GitHub account as the author page being claimed.
+
+### Option 2: Pull Request
+
+Add `src/content/authors/your-username.md`:
+
+```markdown
+---
+github: "your-username"
+name: "Your Name"
+headline: "Tiny CLI tools, weird browser experiments, and delightful automation."
+website_url: "https://example.com"
+links:
+  - label: "Blog"
+    url: "https://example.com/blog"
+notes:
+  - "I like tiny tools that do one thing well."
+sections:
+  - title: "Terminal helpers"
+    description: "Small command-line tools for daily development papercuts."
+    toolSlugs:
+      - "your-tool-slug"
+---
+I make small tools that scratch very specific itches.
+```
+
+The generated page will still list all tools submitted under your GitHub username. Your author file only customizes the intro, links, notes, and optional featured groups.
 
 ## What makes a good Tiny Tool?
 

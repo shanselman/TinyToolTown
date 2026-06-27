@@ -1,0 +1,88 @@
+name: 👤 Customize an Author Page
+description: Claim or update your Tiny Tool Town maker page.
+title: "[Author] @"
+labels: ["author-page"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Customize your Tiny Tool Town author page 👤
+
+        Everyone with an accepted tool already gets an automatic page at:
+
+        `https://www.tinytooltown.com/authors/YOUR-GITHUB-USERNAME/`
+
+        Use this form if you want to add a bio, headline, links, notes, or featured groups of tools.
+        For safety, requests should come from the same GitHub account as the author page you're claiming.
+
+  - type: input
+    id: github
+    attributes:
+      label: GitHub username for this author page
+      description: This should match the GitHub username used on your Tiny Tool Town tool submissions.
+      placeholder: "e.g., janedev"
+    validations:
+      required: true
+
+  - type: input
+    id: name
+    attributes:
+      label: Display name
+      placeholder: "e.g., Jane Developer"
+
+  - type: input
+    id: headline
+    attributes:
+      label: Short headline
+      description: One sentence that describes the kind of tiny tools you make.
+      placeholder: "Tiny CLI tools, weird browser experiments, and delightful automation."
+
+  - type: textarea
+    id: bio
+    attributes:
+      label: Bio / intro
+      description: A short paragraph for the top of your author page.
+      placeholder: "I make small tools that scratch very specific itches..."
+
+  - type: input
+    id: website_url
+    attributes:
+      label: Website URL (optional)
+      placeholder: "https://example.com"
+
+  - type: textarea
+    id: links
+    attributes:
+      label: Other links (optional)
+      description: One per line, in the format `Label - https://example.com`.
+      placeholder: |
+        Blog - https://example.com/blog
+        Mastodon - https://mastodon.social/@janedev
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes or highlights (optional)
+      description: Short bullets about your workbench, style, or what people should notice.
+      placeholder: |
+        - I like tiny tools that do one thing well.
+        - Most of my projects are weekend experiments.
+
+  - type: textarea
+    id: featured_groups
+    attributes:
+      label: Featured tool groups (optional)
+      description: If you have several tools, tell us how you want them grouped. Include existing Tiny Tool Town tool slugs when you know them.
+      placeholder: |
+        Terminal helpers: my-cli-tool, log-wrangler
+        Browser experiments: bookmarklet-lab, tab-tamer
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Checklist
+      options:
+        - label: I am requesting changes for my own GitHub author page, or I can explain why I am authorized to request them.
+          required: true
+        - label: I understand maintainers may edit for length, clarity, and site fit.
+          required: true

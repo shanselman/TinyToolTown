@@ -24,12 +24,20 @@ export interface AuthorProfileSection {
   toolSlugs: string[];
 }
 
+export interface AuthorProfileLink {
+  label: string;
+  url: string;
+}
+
 export interface AuthorProfile {
   github: string;
-  headline: string;
+  name?: string;
+  headline?: string;
   intro: string;
-  notes: string[];
-  sections: AuthorProfileSection[];
+  website_url?: string;
+  links?: AuthorProfileLink[];
+  notes?: string[];
+  sections?: AuthorProfileSection[];
 }
 
 export const customAuthorProfiles: Record<string, AuthorProfile> = {
