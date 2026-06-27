@@ -12,7 +12,7 @@ body:
         Your GitHub username also creates your author page automatically:
         `https://www.tinytooltown.com/authors/YOUR-GITHUB-USERNAME/`
 
-        After your tool is accepted, you can use the **Customize an Author Page** issue form if you want to add a bio, links, or featured groups of your tools.
+        After your tool is accepted, you can use the **Claim or Customize an Author Page** issue form if you want to remove the unclaimed notice and add a bio, links, or featured groups of your tools.
 
   - type: input
     id: name

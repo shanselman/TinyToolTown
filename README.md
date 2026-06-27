@@ -57,13 +57,13 @@ Why did you build it? Why is it delightful?
 
 Author pages are generated from the `author_github` value on each tool. You do **not** need to create a separate author file to get a page — submit one accepted tool and your author page exists automatically.
 
-Want to customize it? You have two options:
+New author pages start as **unclaimed automatic pages**. Want to claim and customize yours? You have two options:
 
 ### Option 1: Author Page Issue
 
-Open a [Customize an Author Page issue](https://github.com/shanselman/TinyToolTown/issues/new?template=customize-author.yml) and tell us what bio, headline, links, notes, or featured tool groups you want.
+Open a [Claim or Customize an Author Page issue](https://github.com/shanselman/TinyToolTown/issues/new?template=customize-author.yml) and tell us what bio, headline, links, notes, or featured tool groups you want.
 
-For safety, the request should come from the same GitHub account as the author page being claimed.
+For safety, the request should come from the same GitHub account as the author page being claimed. Once accepted, the unclaimed notice disappears and your profile content is shown.
 
 ### Option 2: Pull Request
 

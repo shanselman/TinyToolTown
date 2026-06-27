@@ -33,6 +33,7 @@ const contentProfile = contentProfileEntry ? {
   intro: contentProfileEntry.data.intro || contentProfileEntry.body.trim(),
 } satisfies AuthorProfile : undefined;
 const profile = contentProfile || customAuthorProfiles[author.github];
+const isClaimed = Boolean(profile);
 const displayName = profile?.name || author.name;
 const intro = profile?.intro || buildAuthorIntro(author);
 const headline = profile?.headline || `${author.toolCount} ${author.toolCount === 1 ? 'tiny tool' : 'tiny tools'} by ${displayName}`;
@@ -111,7 +112,7 @@ function formatDate(value: string) {
           <a href={`https://github.com/${author.github}`} class="btn btn-primary" target="_blank" rel="noopener">GitHub profile</a>
           <a href={authorFeedPath} class="btn btn-secondary">RSS feed</a>
           <a href="#tools" class="btn btn-secondary">{author.toolCount} {author.toolCount === 1 ? 'tool' : 'tools'}</a>
-          <a href={customizeUrl} class="btn btn-secondary" target="_blank" rel="noopener">Customize this page</a>
+          <a href={customizeUrl} class="btn btn-secondary" target="_blank" rel="noopener">{isClaimed ? 'Customize this page' : 'Claim this page'}</a>
         </div>
         {profileLinks.length > 0 && (
           <div class="profile-links" aria-label="Author links">
@@ -122,6 +123,20 @@ function formatDate(value: string) {
         )}
       </div>
     </section>
+
+    {!isClaimed && (
+      <section class="claim-notice" aria-label="Unclaimed author page">
+        <div>
+          <p class="claim-kicker">Unclaimed automatic page</p>
+          <h2>Are you @{author.github}?</h2>
+          <p>
+            This page was generated automatically from accepted Tiny Tool Town submissions.
+            Claim it by opening an author-page issue from your GitHub account, then add a bio, links, notes, and featured tool groups.
+          </p>
+        </div>
+        <a href={customizeUrl} class="btn btn-primary" target="_blank" rel="noopener">Claim @{author.github}</a>
+      </section>
+    )}
 
     {profileNotes.length > 0 && (
       <section class="profile-notes" aria-label="Workbench notes">
@@ -331,6 +346,37 @@ function formatDate(value: string) {
     text-decoration: underline;
   }
 
+  .claim-notice {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, rgba(61, 169, 252, 0.12), rgba(255, 137, 6, 0.08)), var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .claim-notice h2 {
+    margin-bottom: 0.35rem;
+  }
+
+  .claim-notice p {
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    max-width: 780px;
+  }
+
+  .claim-kicker {
+    color: var(--color-primary) !important;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+  }
+
   .profile-notes {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -488,9 +534,15 @@ function formatDate(value: string) {
 
   @media (max-width: 820px) {
     .author-hero,
+    .claim-notice,
     .showcase-section,
     .terms-section {
       grid-template-columns: 1fr;
+    }
+
+    .claim-notice {
+      align-items: stretch;
+      flex-direction: column;
     }
 
     .profile-notes,

@@ -38,14 +38,16 @@ https://www.tinytooltown.com/authors/YOUR-GITHUB-USERNAME/
 Author pages collect all tools for that GitHub handle, plus tags, languages,
 latest additions, GitHub avatar, and an author-specific RSS feed.
 
-Authors can customize their page in two ways:
+New generated pages are marked as **unclaimed automatic pages** until the author
+adds profile content. Authors can claim and customize their page in two ways:
 
-- Open a [Customize an Author Page issue](https://github.com/shanselman/TinyToolTown/issues/new?template=customize-author.yml)
+- Open a [Claim or Customize an Author Page issue](https://github.com/shanselman/TinyToolTown/issues/new?template=customize-author.yml)
   with the bio, headline, links, notes, or featured groups they want.
 - Open a PR adding `src/content/authors/YOUR-GITHUB-USERNAME.md`.
 
 For safety, author-page customization requests should come from the matching
 GitHub account, or explain why the requester is authorized to make the change.
+Once accepted, the unclaimed notice disappears.
 
 Example author profile:
 

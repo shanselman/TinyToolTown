@@ -603,7 +603,7 @@ jobs:
                   owner,
                   repo,
                   issue_number: item.issueNumber,
-                  body: `🏘️ **Welcome to Tiny Tool Town!**\n\n**${item.name}** has been added and will be live once the site rebuilds:\n\n- Tool page: https://www.tinytooltown.com/tools/${item.slug}/\n- Author page: https://www.tinytooltown.com/authors/${item.authorGithub}/\n- Author RSS feed: https://www.tinytooltown.com/rss/authors/${item.authorGithub}.xml\n\nWant to customize your author page? Open the **Customize an Author Page** issue form: https://github.com/shanselman/TinyToolTown/issues/new?template=customize-author.yml&title=${encodeURIComponent(`[Author] @${item.authorGithub}`)}`,
+                  body: `🏘️ **Welcome to Tiny Tool Town!**\n\n**${item.name}** has been added and will be live once the site rebuilds:\n\n- Tool page: https://www.tinytooltown.com/tools/${item.slug}/\n- Author page: https://www.tinytooltown.com/authors/${item.authorGithub}/\n- Author RSS feed: https://www.tinytooltown.com/rss/authors/${item.authorGithub}.xml\n\nYour author page starts as an unclaimed automatic page. Want to claim/customize it? Open the **Claim or Customize an Author Page** issue form from your GitHub account: https://github.com/shanselman/TinyToolTown/issues/new?template=customize-author.yml&title=${encodeURIComponent(`[Author] @${item.authorGithub}`)}`,
                 });
                 await github.rest.issues.update({
                   owner,

@@ -1,4 +1,4 @@
-name: 👤 Customize an Author Page
+name: 👤 Claim or Customize an Author Page
 description: Claim or update your Tiny Tool Town maker page.
 title: "[Author] @"
 labels: ["author-page"]
@@ -6,11 +6,13 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## Customize your Tiny Tool Town author page 👤
+        ## Claim or customize your Tiny Tool Town author page 👤
 
         Everyone with an accepted tool already gets an automatic page at:
 
         `https://www.tinytooltown.com/authors/YOUR-GITHUB-USERNAME/`
+
+        If your page says **Unclaimed automatic page**, this issue is how you claim it.
 
         Use this form if you want to add a bio, headline, links, notes, or featured groups of tools.
         For safety, requests should come from the same GitHub account as the author page you're claiming.
