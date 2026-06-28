@@ -6,6 +6,8 @@ import ToolCard from '../../components/ToolCard.astro';
 import { getCollection } from 'astro:content';
 import { buildAuthorIntro, buildAuthors, customAuthorProfiles, getAvatarUrl, normalizeGitHubHandle, slugForTool, type AuthorProfile } from '../../lib/authors';
 import { fetchStarCounts, getGitHubRepo } from '../../lib/github';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 
 export async function getStaticPaths() {
   const tools = await getCollection('tools');
@@ -46,6 +48,12 @@ const profileLinks = [
 ];
 const profileNotes = profile?.notes || [];
 
+// Author social cards are pre-generated into public/social/authors/{github}.png
+// by scripts/generate-social.mjs. Reference the static card when it exists,
+// otherwise fall back to the default site Open Graph image.
+const hasAuthorCard = existsSync(join(process.cwd(), 'public', 'social', 'authors', `${author.github}.png`));
+const ogImage = hasAuthorCard ? `/social/authors/${author.github}.png` : undefined;
+
 const repoMap = new Map<string, string>();
 for (const tool of author.tools) {
   const repo = getGitHubRepo(tool.data.github_url);
@@ -79,6 +87,7 @@ function formatDate(value: string) {
   description={metaDescription}
   rssHref={authorFeedPath}
   rssTitle={`${displayName}'s Tiny Tool Town tools`}
+  {...(ogImage ? { ogImage } : {})}
 >
   <Header />
 

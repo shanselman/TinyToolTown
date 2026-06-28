@@ -99,7 +99,7 @@ npm run dev        # local dev server
 | `npm run build`    | Production build into `dist/`.                                      |
 | `npm run preview`  | Preview the production build locally.                               |
 | `npm test`         | Run the Vitest test suite.                                          |
-| `npm run social`   | (Re)generate static social cards into `public/social/` incrementally. |
+| `npm run social`   | (Re)generate static social cards into `public/social/` incrementally. Generates one card per tool (`{slug}.png`) and one per author (`authors/{github}.png`); pass `--no-authors` to skip author cards. |
 
 ### Before opening a pull request
 

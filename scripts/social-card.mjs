@@ -1,9 +1,12 @@
 // Shared social-card (Open Graph image) renderer.
 //
-// Produces a 1200x630 PNG for a tool. Used by scripts/generate-social.mjs to
-// write static images into public/social/{slug}.png. This logic previously
-// lived in src/pages/social/[slug].png.ts as a per-tool prerendered route; it
-// was moved here so a normal `astro build` no longer renders hundreds of PNGs.
+// Produces 1200x630 PNGs used by scripts/generate-social.mjs:
+//   - renderSocialCard()        -> public/social/{slug}.png        (one per tool)
+//   - renderAuthorSocialCard()  -> public/social/authors/{github}.png (one per author)
+//
+// The tool renderer previously lived in src/pages/social/[slug].png.ts as a
+// per-tool prerendered route; it was moved here so a normal `astro build` no
+// longer renders hundreds of PNGs. Both renderers are offline/deterministic.
 
 import sharp from 'sharp';
 import { existsSync, statSync } from 'node:fs';
@@ -210,6 +213,101 @@ export async function renderSocialCard(tool, { rootDir = process.cwd() } = {}) {
       <text x="735" y="486" font-size="20" font-weight="500" fill="#d7def7">${escapeXml(SITE_URL.replace('https://', ''))}</text>
 
       ${previewBlock}
+    </svg>
+  `;
+
+  return sharp(Buffer.from(svg))
+    .png({ compressionLevel: 9, quality: 90 })
+    .toBuffer();
+}
+
+function authorInitials(name, handle) {
+  const source = (name || handle || '').trim();
+  if (!source) return '@';
+  const words = source.split(/\s+/).filter(Boolean);
+  if (words.length === 1) {
+    return words[0].slice(0, 2).toUpperCase();
+  }
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+}
+
+/**
+ * Render a social card PNG for an author showcase page.
+ *
+ * Unlike tool cards, author cards are fully self-contained: they never reach
+ * out to the network (no avatar fetch), so `npm run social` stays offline and
+ * deterministic. The artwork is built only from data already in the repo —
+ * the author's display name, handle, tool count, tags, and languages — so it
+ * never invents a description.
+ *
+ * @param {object} author
+ * @param {string} author.github - Normalized GitHub handle (no leading @).
+ * @param {string} [author.name] - Display name.
+ * @param {number} [author.toolCount]
+ * @param {string[]} [author.tags] - Tag names, most frequent first.
+ * @param {string[]} [author.languages] - Language names, most frequent first.
+ * @returns {Promise<Buffer>} PNG buffer.
+ */
+export async function renderAuthorSocialCard(author) {
+  const accent = '#8b5cf6';
+  const handle = author.github;
+  const displayName = author.name || `@${handle}`;
+  const toolCount = author.toolCount || 0;
+  const tags = Array.isArray(author.tags) ? author.tags : [];
+  const languages = Array.isArray(author.languages) ? author.languages : [];
+
+  const initials = authorInitials(author.name, handle);
+  const toolLine = `${toolCount} ${toolCount === 1 ? 'tiny tool' : 'tiny tools'} on Tiny Tool Town`;
+  const tagText = tags.slice(0, 3).join(' • ');
+  const metaLine = languages.slice(0, 3).join('  ·  ');
+
+  const titleLines = wrapLines(displayName, 16, 2);
+  const titleSvg = titleLines
+    .map((line, index) => `<text x="72" y="${190 + (index * 70)}" font-size="58" font-weight="800" fill="#ffffff">${escapeXml(line)}</text>`)
+    .join('');
+
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#101424" />
+          <stop offset="60%" stop-color="#1b1140" />
+          <stop offset="100%" stop-color="${accent}" />
+        </linearGradient>
+        <linearGradient id="accentFade" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="${accent}" stop-opacity="0.95" />
+          <stop offset="100%" stop-color="${accent}" stop-opacity="0.15" />
+        </linearGradient>
+        <linearGradient id="avatar" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="${accent}" />
+          <stop offset="100%" stop-color="#3da9fc" />
+        </linearGradient>
+        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#050816" flood-opacity="0.45" />
+        </filter>
+      </defs>
+
+      <rect width="${WIDTH}" height="${HEIGHT}" fill="url(#bg)" />
+      <circle cx="1080" cy="95" r="180" fill="rgba(255,255,255,0.08)" />
+      <circle cx="1110" cy="550" r="140" fill="rgba(255,255,255,0.06)" />
+      <rect x="0" y="0" width="670" height="${HEIGHT}" fill="url(#accentFade)" opacity="0.18" />
+
+      <rect x="72" y="58" width="190" height="40" rx="20" fill="rgba(255,255,255,0.12)" />
+      <text x="98" y="84" font-size="20" font-weight="700" fill="#ffffff">Tiny Tool Town</text>
+
+      <text x="72" y="138" font-size="22" font-weight="800" fill="${accent === '#8b5cf6' ? '#c4b5fd' : accent}" letter-spacing="2">AUTHOR SHOWCASE</text>
+      ${titleSvg}
+      <text x="72" y="${190 + (titleLines.length * 70) + 4}" font-size="30" font-weight="700" fill="#d7def7">@${escapeXml(handle)}</text>
+      <text x="72" y="${190 + (titleLines.length * 70) + 50}" font-size="28" font-weight="500" fill="#aeb8d8">${escapeXml(toolLine)}</text>
+
+      ${tagText ? `<text x="72" y="540" font-size="24" font-weight="700" fill="#ffffff">${escapeXml(tagText)}</text>` : ''}
+      <text x="72" y="582" font-size="22" font-weight="600" fill="#ffffff">${escapeXml(metaLine || SITE_URL.replace('https://', ''))}</text>
+
+      <g filter="url(#shadow)">
+        <circle cx="935" cy="300" r="170" fill="url(#avatar)" stroke="rgba(255,255,255,0.18)" stroke-width="4" />
+        <text x="935" y="300" font-size="120" font-weight="900" fill="#ffffff" text-anchor="middle" dominant-baseline="central">${escapeXml(initials)}</text>
+      </g>
+      <text x="935" y="512" font-size="24" font-weight="700" fill="#ffffff" text-anchor="middle">tinytooltown.com/authors</text>
     </svg>
   `;
 
