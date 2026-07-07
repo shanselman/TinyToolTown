@@ -10,7 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@astrojs/rss": "^4.0.18",
+    "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
     "astro": "^6.4.8",
     "rehype-sanitize": "^6.0.0"
