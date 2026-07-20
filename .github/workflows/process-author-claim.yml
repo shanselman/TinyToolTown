@@ -1,0 +1,96 @@
+name: Process Author Page Claim
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  issues: write
+  contents: write
+
+jobs:
+  process:
+    name: Write author MD file and close issue
+    runs-on: ubuntu-latest
+    if: github.event.label.name == 'queued-author'
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Write author file and close issue
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { execSync } = require('child_process');
+            const fs = require('fs');
+            const path = require('path');
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue = context.payload.issue;
+            const body = issue.body || '';
+
+            function getField(md, label) {
+              const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+              const re = new RegExp(`###\\s+${escaped}\\s*\\n+([\\s\\S]*?)(?=\\n###\\s+|$)`, 'i');
+              const m = md.match(re);
+              if (!m) return '';
+              return m[1].replace(/<!--[\s\S]*?-->/g, '').replace(/^_No response_$/gim, '').trim();
+            }
+
+            function parseLinks(raw) {
+              if (!raw) return [];
+              return raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(l => {
+                const m = l.match(/^(.+?)\s*[-–]\s*(https?:\/\/.+)$/);
+                return m ? { label: m[1].trim(), url: m[2].trim() } : null;
+              }).filter(Boolean);
+            }
+
+            const github_handle = getField(body, 'GitHub username for this author page')
+              .split(/\r?\n/)[0].trim().replace(/^@/, '').toLowerCase();
+
+            if (!github_handle) {
+              core.setFailed('Could not parse GitHub handle from issue body.');
+              return;
+            }
+
+            const name        = getField(body, 'Display name');
+            const headline    = getField(body, 'Short headline');
+            const bio         = getField(body, 'Bio / intro');
+            const website_url = getField(body, 'Website URL (optional)');
+            const linksRaw    = getField(body, 'Other links (optional)');
+            const links       = parseLinks(linksRaw);
+
+            const lines = ['---', `github: "${github_handle}"`];
+            if (name)        lines.push(`name: "${name}"`);
+            if (headline)    lines.push(`headline: "${headline.replace(/"/g, '\\"')}"`);
+            if (website_url) lines.push(`website_url: "${website_url}"`);
+            if (links.length) {
+              lines.push('links:');
+              for (const l of links) {
+                lines.push(`  - label: "${l.label}"`);
+                lines.push(`    url: "${l.url}"`);
+              }
+            }
+            lines.push('---');
+            if (bio) lines.push(bio);
+
+            const mdContent = lines.join('\n') + '\n';
+            const filePath = path.join('src', 'content', 'authors', `${github_handle}.md`);
+
+            fs.writeFileSync(filePath, mdContent, 'utf8');
+
+            execSync('git config user.email "actions@github.com"');
+            execSync('git config user.name "GitHub Actions"');
+            execSync(`git add ${filePath}`);
+            execSync(`git commit -m "Add claimed author page for @${github_handle} (closes #${issue.number})"`);
+            execSync('git push');
+
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: issue.number,
+              body: `✅ Author page for @${github_handle} has been added! It will be live at https://www.tinytooltown.com/authors/${github_handle}/ once the site rebuilds.\n\nThanks for being part of Tiny Tool Town! 🏘️`,
+            });
+
+            await github.rest.issues.update({
+              owner, repo, issue_number: issue.number, state: 'closed',
+            });

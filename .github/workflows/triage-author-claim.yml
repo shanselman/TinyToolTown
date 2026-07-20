@@ -1,0 +1,100 @@
+name: Triage Author Page Claim
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  triage:
+    name: Surface author claim for maintainer review
+    runs-on: ubuntu-latest
+    if: github.event.label.name == 'claim-verified'
+
+    steps:
+      - name: Post triage summary
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue = context.payload.issue;
+            const body = issue.body || '';
+
+            const marker = '<!-- author-claim-triage -->';
+            const existing = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number: issue.number, per_page: 100,
+            });
+            if (existing.some(c => c.body?.includes(marker))) return;
+
+            function getField(md, label) {
+              const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+              const re = new RegExp(`###\\s+${escaped}\\s*\\n+([\\s\\S]*?)(?=\\n###\\s+|$)`, 'i');
+              const m = md.match(re);
+              if (!m) return '';
+              return m[1].replace(/<!--[\s\S]*?-->/g, '').replace(/^_No response_$/gim, '').trim();
+            }
+
+            function parseLinks(raw) {
+              if (!raw) return [];
+              return raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(l => {
+                const m = l.match(/^(.+?)\s*[-–]\s*(https?:\/\/.+)$/);
+                return m ? { label: m[1].trim(), url: m[2].trim() } : null;
+              }).filter(Boolean);
+            }
+
+            const github_handle = getField(body, 'GitHub username for this author page')
+              .split(/\r?\n/)[0].trim().replace(/^@/, '').toLowerCase();
+            const name        = getField(body, 'Display name');
+            const headline    = getField(body, 'Short headline');
+            const bio         = getField(body, 'Bio / intro');
+            const website_url = getField(body, 'Website URL (optional)');
+            const linksRaw    = getField(body, 'Other links (optional)');
+            const notes       = getField(body, 'Notes or highlights (optional)');
+            const links       = parseLinks(linksRaw);
+
+            // Build proposed MD content
+            const frontmatter = [
+              '---',
+              `github: "${github_handle}"`,
+              name       ? `name: "${name}"` : null,
+              headline   ? `headline: "${headline.replace(/"/g, '\\"')}"` : null,
+              website_url ? `website_url: "${website_url}"` : null,
+              links.length ? `links:\n${links.map(l => `  - label: "${l.label}"\n    url: "${l.url}"`).join('\n')}` : null,
+              '---',
+            ].filter(Boolean).join('\n');
+
+            const mdContent = bio ? `${frontmatter}\n${bio}` : frontmatter;
+
+            const previewBlock = '```markdown\n' + mdContent + '\n```';
+
+            const comment = [
+              marker,
+              `## 👤 Author Claim Triage — @${github_handle}`,
+              '',
+              '| Field | Value |',
+              '|-------|-------|',
+              `| **GitHub** | @${github_handle} |`,
+              name       ? `| **Display name** | ${name} |` : null,
+              headline   ? `| **Headline** | ${headline} |` : null,
+              website_url ? `| **Website** | ${website_url} |` : null,
+              links.length ? `| **Links** | ${links.map(l => `[${l.label}](${l.url})`).join(', ')} |` : null,
+              notes      ? `| **Notes** | ${notes.replace(/\n/g, ' ')} |` : null,
+              '',
+              '### Proposed `src/content/authors/' + github_handle + '.md`',
+              previewBlock,
+              '',
+              '---',
+              `**@${owner}** — add \`queued-author\` to approve, or close to reject.`,
+            ].filter(l => l !== null).join('\n');
+
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: issue.number, body: comment,
+            });
+
+            await github.rest.issues.addLabels({
+              owner, repo, issue_number: issue.number, labels: ['needs-maintainer-review'],
+            }).catch(() => {});
