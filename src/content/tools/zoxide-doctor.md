@@ -13,6 +13,6 @@ featured: false
 theme: "terminal"
 ---
 
-zoxide-doctor explains why an installed zoxide setup is not working. It checks whether the binary is on PATH, verifies `zoxide init` for the selected shell, looks for active initialization in common profile files, reports optional fzf availability, and can emit machine-readable JSON. The tool is read-only, has no runtime dependencies, and runs on Linux, macOS, and Windows.
+zoxide-doctor explains why an installed zoxide setup is not working. It checks whether the binary is on PATH, verifies `zoxide init` for the selected shell, looks for active initialization in common profile files, reports optional fzf availability, and can emit machine-readable JSON. The tool is read-only, has no runtime dependencies, and runs on Linux, macOS, and Windows. Its results can be compared with the expected behavior in the [zoxide commands reference](https://zoxide.org/blog/zoxide-commands/).
 
 This is an independent community tool, not an official zoxide project.
