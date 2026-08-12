@@ -71,16 +71,16 @@ const moreTags = [...tagCounts.entries()]
         <button class="sort-btn favorites-only-btn" id="favorites-only-btn" aria-pressed="false">❤ Favorites only</button>
       </div>
       <div class="tags-filter" id="tags-filter">
-        <button class="tag-btn active" data-tag="all">All</button>
+        <button class="tag-btn active" data-tag="all" aria-pressed="true">All</button>
         {popularTags.map(tag => (
-          <button class="tag-btn" data-tag={tag}>{tag} <span class="tag-count">{tagCounts.get(tag)}</span></button>
+          <button class="tag-btn" data-tag={tag} aria-pressed="false">{tag} <span class="tag-count">{tagCounts.get(tag)}</span></button>
         ))}
         {moreTags.length > 0 && (
           <button class="tag-btn more-tags-toggle" id="more-tags-toggle">More ▾</button>
         )}
         <div class="more-tags" id="more-tags" style="display: none;">
           {moreTags.map(tag => (
-            <button class="tag-btn" data-tag={tag}>{tag}</button>
+            <button class="tag-btn" data-tag={tag} aria-pressed="false">{tag}</button>
           ))}
         </div>
       </div>
@@ -185,6 +185,26 @@ const moreTags = [...tagCounts.entries()]
       url.searchParams.delete('favorites');
     }
 
+    history.replaceState(null, '', url.toString());
+  }
+
+  function setActiveTag(tag: string): void {
+    activeTag = tag;
+
+    document.querySelectorAll('.tag-btn[data-tag]').forEach(b => {
+      const isActive = (b as HTMLElement).dataset.tag === activeTag;
+      b.classList.toggle('active', isActive);
+      b.setAttribute('aria-pressed', String(isActive));
+    });
+  }
+
+  // Only touches the URL when a ?tag= is actually present, so tags picked by
+  // clicking (which never write to the URL) leave it untouched.
+  function clearTagParam(): void {
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has('tag')) return;
+
+    url.searchParams.delete('tag');
     history.replaceState(null, '', url.toString());
   }
 
@@ -307,24 +327,17 @@ const moreTags = [...tagCounts.entries()]
     search.value = urlQ;
     filterTools();
   } else if (urlTag) {
-    activeTag = urlTag.toLowerCase();
-    // Activate the matching tag button (may be in the "more" section)
-    if (moreTags && moreToggle) {
-      const allBtns = document.querySelectorAll('.tag-btn[data-tag]');
-      let found = false;
-      allBtns.forEach(b => {
-        if ((b as HTMLElement).dataset.tag === activeTag) {
-          found = true;
-          // If it's inside the hidden more-tags section, expand it
-          if (b.closest('#more-tags')) {
-            moreTags.style.display = 'contents';
-            moreToggle.textContent = 'Less ▴';
-          }
-          document.querySelectorAll('.tag-btn').forEach(x => x.classList.remove('active'));
-          b.classList.add('active');
-        }
-      });
+    // Unknown tags still apply, so a stale ?tag= shows the empty state rather
+    // than silently listing everything.
+    setActiveTag(urlTag.toLowerCase());
+
+    // If the matching button lives in the hidden "more" section, expand it
+    const activeBtn = document.querySelector('.tag-btn[data-tag].active');
+    if (activeBtn?.closest('#more-tags') && moreTags && moreToggle) {
+      moreTags.style.display = 'contents';
+      moreToggle.textContent = 'Less ▴';
     }
+
     filterTools();
   }
 
@@ -341,9 +354,14 @@ const moreTags = [...tagCounts.entries()]
   document.getElementById('tags-filter')!.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest('.tag-btn:not(.more-tags-toggle)') as HTMLElement;
     if (!btn || !btn.dataset.tag) return;
-    document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    activeTag = btn.dataset.tag;
+
+    // Clicking the active tag again clears it and falls back to "All". The
+    // 'all' guard keeps a click on an already-active "All" a no-op.
+    const clicked = btn.dataset.tag;
+    const deselecting = clicked !== 'all' && clicked === activeTag;
+
+    setActiveTag(deselecting ? 'all' : clicked);
+    if (deselecting) clearTagParam();
     filterTools();
   });
 
