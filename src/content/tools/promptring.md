@@ -5,7 +5,7 @@ author: "Pratyansh Agrawal"
 author_github: "pratyansh-agrawal"
 github_url: "https://github.com/pratyansh-agrawal/promptring"
 thumbnail: "/thumbnails/promptring.gif"
-tags: []
+tags: ["notification", "productivity", "cross-platform", "macos", "windows"]
 language: "Python"
 license: "MIT"
 date_added: "2026-06-22"
