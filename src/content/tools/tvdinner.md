@@ -5,7 +5,7 @@ author: "Iain Smith"
 author_github: "issinoho"
 github_url: "https://github.com/issinoho/tvdinner"
 thumbnail: "/thumbnails/tvdinner.webp"
-tags: ["cli", "iptv", "m3u", "epg", "mpv", "streaming"]
+tags: ["cli", "iptv", "m3u", "epg", "mpv"]
 language: "Python"
 license: "MIT"
 date_added: "2026-08-03"
