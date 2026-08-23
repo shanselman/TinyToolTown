@@ -161,4 +161,9 @@ describe('batch import safety', () => {
     const workflow = readFileSync('.github/workflows/batch-approve.yml', 'utf8');
     expect(workflow).toContain("removeLabelIfExists(item.issueNumber, 'queued-import')");
   });
+
+  it('clears a stale import-failed when a later run succeeds', () => {
+    const workflow = readFileSync('.github/workflows/batch-approve.yml', 'utf8');
+    expect(workflow).toContain("removeLabelIfExists(item.issueNumber, 'import-failed')");
+  });
 });

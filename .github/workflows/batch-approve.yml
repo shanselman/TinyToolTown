@@ -626,6 +626,9 @@ jobs:
                   state: 'closed',
                 });
                 await removeLabelIfExists(item.issueNumber, 'queued-import');
+                // A submission that failed an earlier run and was later fixed
+                // would otherwise stay branded import-failed forever.
+                await removeLabelIfExists(item.issueNumber, 'import-failed');
               }
             } else if (processed.length > 0 && !pushed) {
               for (const item of processed) {
