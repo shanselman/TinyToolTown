@@ -611,6 +611,7 @@ jobs:
                   issue_number: item.issueNumber,
                   state: 'closed',
                 });
+                await removeLabelIfExists(item.issueNumber, 'queued-import');
               }
             } else if (processed.length > 0 && !pushed) {
               for (const item of processed) {
