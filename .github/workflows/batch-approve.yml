@@ -228,6 +228,8 @@ jobs:
             }
 
             for (const issue of issues) {
+              let writtenFilePath = null;
+              let writtenThumbFile = null;
               try {
                 const body = issue.body || '';
 
@@ -385,6 +387,7 @@ jobs:
                 lines.push('');
                 lines.push(sanitizeHtml(description));
                 fs.writeFileSync(filePath, lines.join('\n'));
+                writtenFilePath = filePath;
 
                 // Thumbnail extraction
                 const repoClean = github_url.replace(/\/$/, '');
@@ -520,6 +523,7 @@ jobs:
                     `$1thumbnail: "${thumbPath}"\n`,
                   );
                   fs.writeFileSync(filePath, updated);
+                  writtenThumbFile = path.join('public/thumbnails', path.basename(thumbPath));
                 }
 
                 processed.push({
@@ -532,6 +536,16 @@ jobs:
                 console.log(`Prepared #${issue.number}: ${name}`);
               } catch (err) {
                 const reason = err.message || 'Unknown error';
+                // Roll back any partial write so `git add src/content/tools` can't
+                // publish a tool page for an import that failed partway through.
+                for (const stalePath of [writtenFilePath, writtenThumbFile]) {
+                  if (!stalePath) continue;
+                  try {
+                    if (fs.existsSync(stalePath)) fs.unlinkSync(stalePath);
+                  } catch (cleanupError) {
+                    console.log(`Cleanup failed for ${stalePath}: ${cleanupError.message}`);
+                  }
+                }
                 failed.push({ issueNumber: issue.number, reason });
                 console.log(`Failed #${issue.number}: ${reason}`);
                 await markFailed(issue.number, reason, true);

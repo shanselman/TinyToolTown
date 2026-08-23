@@ -8,6 +8,10 @@ permissions:
   issues: write
   contents: write
 
+concurrency:
+  group: tool-file-writer
+  cancel-in-progress: false
+
 jobs:
   process:
     name: Write author MD file and close issue
@@ -36,8 +40,29 @@ jobs:
             const issue = context.payload.issue;
             const body = issue.body || '';
             const labels = issue.labels.map(label => typeof label === 'string' ? label : label.name);
+
+            async function removeLabelIfExists(name) {
+              await github.rest.issues.removeLabel({
+                owner, repo, issue_number: issue.number, name,
+              }).catch(error => {
+                if (error.status !== 404) throw error;
+              });
+            }
+
+            async function markFailed(reason) {
+              await removeLabelIfExists('queued-author');
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number: issue.number, labels: ['needs-maintainer-review'],
+              });
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: issue.number,
+                body: `⚠️ Author-page processing failed: ${reason}\n\nAfter correcting or approving the claim, re-add the \`queued-author\` label to retry.`,
+              });
+              core.setFailed(reason);
+            }
+
             if (!labels.includes('claim-verified')) {
-              core.setFailed('Author claim must be verified before it can be processed.');
+              await markFailed('Author claim must be verified before it can be processed.');
               return;
             }
 
@@ -51,20 +76,56 @@ jobs:
             });
             const errors = validateAuthorClaim(claim, hasAcceptedTool);
             if (errors.length) {
-              core.setFailed(`Author claim is not ready: ${errors.join(' ')}`);
+              await markFailed(`Author claim is not ready: ${errors.join(' ')}`);
               return;
             }
 
             const mdContent = renderAuthorMarkdown(claim);
             const filePath = path.join('src', 'content', 'authors', `${claim.github}.md`);
 
-            fs.writeFileSync(filePath, mdContent, 'utf8');
+            const exists = fs.existsSync(filePath);
+            const current = exists ? fs.readFileSync(filePath, 'utf8') : null;
+            const isUpdate = exists && current !== mdContent;
 
-            execFileSync('git', ['config', 'user.email', 'actions@github.com']);
-            execFileSync('git', ['config', 'user.name', 'GitHub Actions']);
-            execFileSync('git', ['add', filePath]);
-            execFileSync('git', ['commit', '-m', `Add claimed author page for @${claim.github} (closes #${issue.number})`]);
-            execFileSync('git', ['push']);
+            if (isUpdate && !labels.includes('author-update-approved')) {
+              await markFailed(
+                `An author page for @${claim.github} already exists and this claim would change it. `
+                + 'A maintainer must add the `author-update-approved` label before re-adding `queued-author`.'
+              );
+              return;
+            }
+
+            let pushed = false;
+            if (exists && current === mdContent) {
+              console.log('Author page already up to date; nothing to commit.');
+              pushed = true;
+            } else {
+              fs.writeFileSync(filePath, mdContent, 'utf8');
+              execFileSync('git', ['config', 'user.email', 'actions@github.com']);
+              execFileSync('git', ['config', 'user.name', 'GitHub Actions']);
+              execFileSync('git', ['add', filePath]);
+              const verb = isUpdate ? 'Update' : 'Add';
+              execFileSync('git', ['commit', '-m', `${verb} claimed author page for @${claim.github} (closes #${issue.number})`]);
+              for (let attempt = 0; attempt < 5; attempt++) {
+                try {
+                  execFileSync('git', ['push']);
+                  pushed = true;
+                  break;
+                } catch (error) {
+                  if (attempt === 4) break;
+                  try {
+                    execFileSync('git', ['pull', '--rebase']);
+                  } catch {
+                    // A failed pull may still recover on the next push attempt.
+                  }
+                }
+              }
+            }
+
+            if (!pushed) {
+              await markFailed('Git push failed after retries.');
+              return;
+            }
 
             await github.rest.issues.createComment({
               owner, repo, issue_number: issue.number,

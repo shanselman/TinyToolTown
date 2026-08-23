@@ -112,4 +112,53 @@ describe('author claim workflows', () => {
     expect(workflow).toContain("refreshedIssue.data.state !== 'closed'");
     expect(workflow).toContain("['queued-author', 'needs-maintainer-review']");
   });
+
+  it('serializes author-page writes against the other main-branch writers', () => {
+    const workflow = readFileSync('.github/workflows/process-author-claim.yml', 'utf8');
+    expect(workflow).toContain('group: tool-file-writer');
+  });
+
+  it('retries the push instead of failing on a concurrent commit', () => {
+    const workflow = readFileSync('.github/workflows/process-author-claim.yml', 'utf8');
+    expect(workflow).toContain("execFileSync('git', ['pull', '--rebase'])");
+  });
+
+  it('releases queued-author when processing fails so the claim can be retried', () => {
+    const workflow = readFileSync('.github/workflows/process-author-claim.yml', 'utf8');
+    expect(workflow).toContain('async function markFailed(reason)');
+    expect(workflow).toContain("removeLabelIfExists('queued-author')");
+    // Every bail-out must go through markFailed, never a bare core.setFailed,
+    // otherwise the claim keeps queued-author forever and cannot self-retry.
+    // Exactly one call is allowed: the one inside markFailed itself.
+    expect(workflow.match(/core\.setFailed\(/g) ?? []).toHaveLength(1);
+  });
+
+  it('requires explicit approval before replacing an existing author page', () => {
+    const workflow = readFileSync('.github/workflows/process-author-claim.yml', 'utf8');
+    expect(workflow).toContain("labels.includes('author-update-approved')");
+    // Identical content must be a no-op, not an empty commit.
+    expect(workflow).toContain('current === mdContent');
+  });
+
+  it('ignores its own bookkeeping labels so validation cannot race the processor', () => {
+    const workflow = readFileSync('.github/workflows/validate-author-claim.yml', 'utf8');
+    expect(workflow).toContain("github.event.label.name != 'queued-author'");
+    expect(workflow).toContain("github.event.label.name != 'needs-maintainer-review'");
+  });
+});
+
+describe('batch import safety', () => {
+  it('rolls back a partial write so a failed import is never staged', () => {
+    const workflow = readFileSync('.github/workflows/batch-approve.yml', 'utf8');
+    // `git add src/content/tools` stages the whole directory, so a tool file
+    // written before a mid-import throw would otherwise ship a live page for a
+    // submission that was marked import-failed.
+    expect(workflow).toContain('writtenFilePath');
+    expect(workflow).toContain('fs.unlinkSync(stalePath)');
+  });
+
+  it('clears queued-import once an issue has been imported and closed', () => {
+    const workflow = readFileSync('.github/workflows/batch-approve.yml', 'utf8');
+    expect(workflow).toContain("removeLabelIfExists(item.issueNumber, 'queued-import')");
+  });
 });

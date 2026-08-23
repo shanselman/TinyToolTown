@@ -13,8 +13,13 @@ jobs:
     name: Verify claimant matches GitHub username
     runs-on: ubuntu-latest
     if: >-
-      contains(github.event.issue.labels.*.name, 'author-page') ||
-      (github.event.action == 'labeled' && github.event.label.name == 'author-page')
+      (
+        contains(github.event.issue.labels.*.name, 'author-page') ||
+        (github.event.action == 'labeled' && github.event.label.name == 'author-page')
+      ) &&
+      github.event.label.name != 'queued-author' &&
+      github.event.label.name != 'needs-maintainer-review' &&
+      github.event.label.name != 'author-update-approved'
     steps:
       - uses: actions/checkout@v7
 
@@ -61,6 +66,7 @@ jobs:
             await ensureLabel('invalid-author-claim', 'd73a4a', 'Author-page claim does not match issue author');
             await ensureLabel('needs-maintainer-review', 'fbca04', 'Ready for maintainer review');
             await ensureLabel('queued-author', '1d76db', 'Approved author page waiting to be written');
+            await ensureLabel('author-update-approved', '5319e7', 'Maintainer approved replacing an existing author page');
 
             if (!requested) {
               if (!hasInvalid) {
