@@ -1,23 +1,26 @@
 {
-  "lastRun": "2026-04-14",
+  "lastRun": "2026-08-31",
   "selectedSlugs": [
+    "blood-pressure-tracking",
+    "dhcp-flipswitch",
     "peekdesktop",
-    "bluetoothwave",
-    "simple-icon-file-maker",
     "tally",
+    "textream",
     "toasty",
-    "fancygist",
-    "3d-maze",
-    "textream"
+    "touchbridge",
+    "fancygist"
   ],
   "lastFeatured": {
-    "peekdesktop": "2026-04-14",
+    "peekdesktop": "2026-08-31",
     "bluetoothwave": "2026-04-14",
     "simple-icon-file-maker": "2026-04-14",
-    "tally": "2026-04-14",
-    "toasty": "2026-04-14",
-    "fancygist": "2026-04-14",
+    "tally": "2026-08-31",
+    "toasty": "2026-08-31",
+    "fancygist": "2026-08-31",
     "3d-maze": "2026-04-14",
-    "textream": "2026-04-14"
+    "textream": "2026-08-31",
+    "blood-pressure-tracking": "2026-08-31",
+    "dhcp-flipswitch": "2026-08-31",
+    "touchbridge": "2026-08-31"
   }
 }

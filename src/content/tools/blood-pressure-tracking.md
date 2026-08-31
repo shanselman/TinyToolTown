@@ -9,7 +9,7 @@ tags: ["medical", "blood pressure"]
 language: "TypeScript"
 theme: "ocean"
 date_added: "2026-08-27"
-featured: false
+featured: true
 ---
 
 Features

@@ -10,7 +10,7 @@ tags: ["windows", "networking", "dhcp", "system-tray", "dotnet"]
 language: "C#"
 license: "MIT"
 date_added: "2026-08-27"
-featured: false
+featured: true
 ---
 
 DHCP Flipswitch sits in the system tray and switches one network adapter between DHCP and a saved static IPv4 profile — address, subnet mask, gateway, primary and secondary DNS — with a single left-click.

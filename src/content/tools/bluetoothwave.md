@@ -9,7 +9,7 @@ tags: ["bluetooth", "audio", "windows", "system-tray"]
 language: "C++"
 license: "MIT"
 date_added: "2026-04-13"
-featured: true
+featured: false
 ai_summary: "Tune into your favorite Bluetooth audio on Windows without the hassle—this nifty manager keeps your connections smooth, silent, and secure! It’s like a personal DJ for your Bluetooth devices that never misses a beat."
 ai_features: ["🎵 Effortless A2DP Sink connection management", "🌐 Auto-detects and matches your Windows system language", "🔔 Discreet system tray presence keeps your desktop clutter-free", "⚡ Automatically reconnects to your last-used devices on startup"]
 ---
