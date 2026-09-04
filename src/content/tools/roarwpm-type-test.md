@@ -16,7 +16,7 @@ featured: false
 
 # 🐻 RoarWPM
 
-RoarWPM is an interactive, web-based typing speed test application designed to help users track and improve their typing speed and accuracy. Created by "VP", this project features a clean dark-mode interface, gamified achievements, and detailed performance tracking.
+RoarWPM is an interactive, web-based typing speed test application designed to help users track and improve their typing speed and accuracy. This project features a clean dark-mode interface, gamified achievements, and detailed performance tracking.
 
 ---
 
