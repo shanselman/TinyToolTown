@@ -12,7 +12,7 @@ language: "HTML"
 license: "MIT"
 theme: "newspaper"
 date_added: "2026-09-03"
-featured: false
+featured: true
 ---
 
 
