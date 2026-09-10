@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
-    "@astrojs/sitemap": "^3.7.3",
+    "@astrojs/sitemap": "^3.7.4",
     "astro": "^6.4.8",
     "rehype-sanitize": "^6.0.0"
   },
