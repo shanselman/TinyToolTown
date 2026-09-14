@@ -12,7 +12,7 @@ language: "JavaScript"
 license: "MIT"
 theme: "terminal"
 date_added: "2026-09-14"
-featured: false
+featured: true
 ---
 
 Sitemap Cohort Auditor is a dependency-free Node.js CLI for release reviews. It reads sitemap declarations and compares before/after URL cohorts, reporting additions, removals, image coverage, and metadata checks. The included synthetic fixture reports two additions and one removal. It does not crawl listed URLs or predict indexing or rankings.
