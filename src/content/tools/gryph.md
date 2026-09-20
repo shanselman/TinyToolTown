@@ -4,7 +4,7 @@ tagline: "Audit Trail for AI coding agents"
 author: "Abhisek Datta"
 author_github: "abhisek"
 github_url: "https://github.com/safedep/gryph"
-thumbnail: "/thumbnails/gryph.gif"
+thumbnail: "/thumbnails/gryph.webp"
 tags: ["cli", "coding-agent", "claude-code"]
 language: "Go"
 license: "Apache-2.0"
