@@ -1,9 +1,9 @@
 ---
 name: "Tiny Clips"
-tagline: "Tiny macOS app to record videos/gif/screenshots and edit them."
+tagline: "Tiny macOS and Windows app to record videos/gif/screenshots and edit them."
 author: "James Montemagno"
 author_github: "jamesmontemagno"
-github_url: "https://github.com/jamesmontemagno/tiny-clips-mac"
+github_url: "https://github.com/jamesmontemagno/tiny-clips"
 website_url: "https://tinyclips.app"
 thumbnail: "/thumbnails/tiny-clips.webp"
 tags: ["video", "macos", "screenshot"]
@@ -16,7 +16,7 @@ ai_summary: "A sleek little menu bar app that captures screenshots, videos, and 
 ai_features: ["📸 Capture PNG screenshots, MP4 video, or animated GIFs with region selection", "✂️ Built-in video trimmer lets you cut start and end before saving", "📋 Auto-copy to clipboard and reveal in Finder options", "⌨️ Global keyboard shortcuts for instant capture without touching the menu"]
 ---
 
-A lightweight macOS menu bar app for capturing screenshots (PNG), video (MP4), and animated GIFs of a selected screen region.
+A lightweight macOS & Windows menu bar app for capturing screenshots (PNG), video (MP4), and animated GIFs of a selected screen region.
 
 Features
 * Screenshot — Select a region and capture a PNG screenshot

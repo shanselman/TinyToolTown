@@ -1,5 +1,5 @@
 ---
-name: "Markdown Editor"
+name: "Markdown Editor JS"
 tagline: "A modern, feature-rich markdown and rich text editor with live preview, syntax highlighting, and export capabilities. Built with vanilla JavaScript, HTML, and CSS."
 author: "Emrullah Celik"
 author_github: "Emrullah007"
