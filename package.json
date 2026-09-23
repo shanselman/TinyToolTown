@@ -13,11 +13,11 @@
     "@astrojs/markdown-remark": "^7.3.1",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
-    "astro": "^7.3.2",
+    "astro": "^7.3.3",
     "rehype-sanitize": "^6.0.0"
   },
   "optionalDependencies": {
-    "@rollup/rollup-win32-x64-msvc": "^4.63.3"
+    "@rollup/rollup-win32-x64-msvc": "^4.63.4"
   },
   "devDependencies": {
     "sharp": "^0.35.4",
