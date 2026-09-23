@@ -1,6 +1,6 @@
 ---
 name: "⨋ LaTeXBox"
-tagline: "LaTeXBox is a lightweight, zero-setup HTML application that allows users to write, execute, and preview LaTeX math and text snippets directly in the browser. Built with a combination of Vanilla JS, CodeMirror, and MathJax 3, it functions as a 100% local sandbox requiring no backend or software installation."
+tagline: "Write and preview LaTeX snippets locally in your browser."
 author: "Vishnu Pradeep"
 author_github: "pradeep-vishnu"
 github_url: "https://github.com/pradeep-vishnu/LaTeXBox"
