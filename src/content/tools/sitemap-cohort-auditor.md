@@ -5,7 +5,7 @@ author: "Krishnam Murarka"
 author_github: "krishnammurarka"
 github_url: "https://github.com/edilec/sitemap-cohort-auditor"
 thumbnail: "/thumbnails/sitemap-cohort-auditor.webp"
-website_url: "https://edilec.com/open-source/"
+website_url: "https://edilec.com/open-source/sitemap-cohort-auditor/"
 thumbnail_source: "https://raw.githubusercontent.com/edilec/sitemap-cohort-auditor/main/assets/social-preview/sitemap-cohort-auditor.png"
 tags: ["cli", "sitemap", "technical-seo", "release-checks"]
 language: "JavaScript"
