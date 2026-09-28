@@ -8,7 +8,7 @@ thumbnail: "/thumbnails/game-from-home.webp"
 tags: ["windows", "fun", "tiny", "gaming", "ram"]
 license: "MIT"
 date_added: "2026-09-23"
-featured: false
+featured: true
 ---
 
 Between Teams, Zoom, Cursor, Codex, Edge etc., all the apps open while WFH, made a one-click tool to exit all those apps and free-up RAM for gaming. Discord is a protected app because gamers need it.

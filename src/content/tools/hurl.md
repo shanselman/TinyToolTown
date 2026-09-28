@@ -10,7 +10,7 @@ language: "C#, Rust"
 license: "MIT"
 theme: "forest"
 date_added: "2026-05-02"
-featured: false
+featured: true
 ai_summary: "Why settle for one default browser when you can pick your favorite every time you click a link? This nifty Windows tool lets you choose your browsing adventure on the fly, making link-clicking way more fun and flexible!"
 ai_features: ["🔥 Choose browser on every link click", "⚡ Custom browser configurations with launch arguments", "🎯 Automatic browser rules to skip prompts", "🛠️ Modern UI with a settings app and experimental web extension"]
 ---
