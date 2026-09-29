@@ -150,7 +150,8 @@ const moreTags = [...tagCounts.entries()]
   const counterLabel = document.querySelector<HTMLElement>('#browse-header .counter-label');
   const totalCount = items.length;
 
-  let activeTag = 'all';
+  // Empty set means "All". Multiple tags combine with AND.
+  const activeTags = new Set<string>();
   let activeSort = 'newest';
   let favoritesOnly = false;
 
@@ -188,11 +189,10 @@ const moreTags = [...tagCounts.entries()]
     history.replaceState(null, '', url.toString());
   }
 
-  function setActiveTag(tag: string): void {
-    activeTag = tag;
-
+  function syncTagButtons(): void {
     document.querySelectorAll('.tag-btn[data-tag]').forEach(b => {
-      const isActive = (b as HTMLElement).dataset.tag === activeTag;
+      const tag = (b as HTMLElement).dataset.tag!;
+      const isActive = tag === 'all' ? activeTags.size === 0 : activeTags.has(tag);
       b.classList.toggle('active', isActive);
       b.setAttribute('aria-pressed', String(isActive));
     });
@@ -248,7 +248,8 @@ const moreTags = [...tagCounts.entries()]
       const favorited = el.dataset.favorited === 'true';
 
       const matchesSearch = !query || name.includes(query) || tagline.includes(query) || tags.includes(query) || author.includes(query) || authorGithub.includes(query);
-      const matchesTag = activeTag === 'all' || tags.split(',').includes(activeTag);
+      const toolTags = tags.split(',');
+      const matchesTag = [...activeTags].every(t => toolTags.includes(t));
       const matchesFavorites = !favoritesOnly || favorited;
 
       if (matchesSearch && matchesTag && matchesFavorites) {
@@ -327,13 +328,14 @@ const moreTags = [...tagCounts.entries()]
     search.value = urlQ;
     filterTools();
   } else if (urlTag) {
-    // Unknown tags still apply, so a stale ?tag= shows the empty state rather
-    // than silently listing everything.
-    setActiveTag(urlTag.toLowerCase());
+    // Supports ?tag=a,b for multiple tags. Unknown tags still apply, so a stale
+    // ?tag= shows the empty state rather than silently listing everything.
+    urlTag.toLowerCase().split(',').map(t => t.trim()).filter(t => t && t !== 'all')
+      .forEach(t => activeTags.add(t));
+    syncTagButtons();
 
-    // If the matching button lives in the hidden "more" section, expand it
-    const activeBtn = document.querySelector('.tag-btn[data-tag].active');
-    if (activeBtn?.closest('#more-tags') && moreTags && moreToggle) {
+    // If any matching button lives in the hidden "more" section, expand it
+    if (document.querySelector('#more-tags .tag-btn[data-tag].active') && moreTags && moreToggle) {
       moreTags.style.display = 'contents';
       moreToggle.textContent = 'Less ▴';
     }
@@ -355,13 +357,20 @@ const moreTags = [...tagCounts.entries()]
     const btn = (e.target as HTMLElement).closest('.tag-btn:not(.more-tags-toggle)') as HTMLElement;
     if (!btn || !btn.dataset.tag) return;
 
-    // Clicking the active tag again clears it and falls back to "All". The
-    // 'all' guard keeps a click on an already-active "All" a no-op.
+    // Tags toggle on/off independently; "All" clears the selection. Any change
+    // drops a ?tag= deep link since it no longer reflects the selection.
     const clicked = btn.dataset.tag;
-    const deselecting = clicked !== 'all' && clicked === activeTag;
+    if (clicked === 'all') {
+      if (activeTags.size === 0) return;
+      activeTags.clear();
+    } else if (activeTags.has(clicked)) {
+      activeTags.delete(clicked);
+    } else {
+      activeTags.add(clicked);
+    }
 
-    setActiveTag(deselecting ? 'all' : clicked);
-    if (deselecting) clearTagParam();
+    syncTagButtons();
+    clearTagParam();
     filterTools();
   });
 
