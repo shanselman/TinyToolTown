@@ -12,7 +12,7 @@ language: "C#"
 license: "Apache-2.0"
 theme: "synthwave"
 date_added: "2026-09-30"
-featured: false
+featured: true
 ---
 
 Reading dense technical documentation, extensive code reviews, and multi-paragraph LLM responses causes persistent eye strain. Most existing desktop text-to-speech tools either rely on robotic legacy synthesizers, demand paid cloud API tokens, or require heavy Python virtual environments with noticeable startup latency.

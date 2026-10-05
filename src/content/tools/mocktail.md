@@ -9,7 +9,7 @@ tags: ["mock-api", "developer-tools", "mock", "demo", "rest"]
 language: "Go, JS"
 license: "MIT"
 date_added: "2026-02-13"
-featured: false
+featured: true
 ai_summary: "Spin up fake APIs in seconds with this tiny 13MB container that comes with a slick dashboard — perfect for frontend devs tired of waiting on backend teams or anyone who needs to test error handling without breaking production."
 ai_features: ["🍸 Create mocks for any HTTP method with custom status codes and response delays", "✨ Modern dashboard with JSON editor, syntax highlighting, and auto-generated code snippets", "🎲 Alpha feature randomizes fake data with 20+ faker types for realistic responses", "📦 SQLite persistence and easy import/export so your mocks travel with you"]
 ---

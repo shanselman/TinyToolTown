@@ -11,7 +11,7 @@ language: "Rust"
 license: "MIT"
 theme: "newspaper"
 date_added: "2026-09-30"
-featured: false
+featured: true
 ---
 
 I built Rust Notepad as a fun side project to bring back the joy of a text editor that simply edits text. It’s a native Windows app written in Rust, with tabs, dark mode, find and replace, and session restore—without AI integration, telemetry, or a browser runtime.
