@@ -8,7 +8,7 @@ tags: ["windows", "monitor"]
 language: "C#"
 license: "MIT"
 date_added: "2026-10-08"
-featured: false
+featured: true
 ---
 
 Changing monitor input sources without using the monitor's physical buttons.

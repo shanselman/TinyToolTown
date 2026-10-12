@@ -8,7 +8,7 @@ thumbnail: "/thumbnails/powerdocker.webp"
 website_url: "https://skoula.cz/blog/2025/8/powerdocker---manage-your-containers-with-ease/"
 tags: ["docker", "containers", "tui"]
 date_added: "2026-10-08"
-featured: false
+featured: true
 ---
 
 A native TUI Docker management app written in C# with Compose project grouping. It automatically groups containers by their Docker Compose projects.
