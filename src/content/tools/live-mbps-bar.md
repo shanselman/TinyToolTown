@@ -10,7 +10,7 @@ tags: ["ios", "safari", "network", "speed", "realtime"]
 language: "Swift"
 license: "MIT"
 date_added: "2026-10-14"
-featured: false
+featured: true
 ---
 
 Live Mbps Bar is a simple iOS app that displays real-time network speed as a small bar at the top of Safari.

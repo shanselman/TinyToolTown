@@ -10,7 +10,7 @@ tags: ["gpu", "windows", "benchmark", "directx"]
 language: "C#"
 license: "Unlicense"
 date_added: "2026-10-14"
-featured: false
+featured: true
 ---
 
 Watch pretty spheres while benchmarking your GPU.  Uses a hardware-instanced field of tessellated spheres with a Shader Model 3.0 Blinn-Phong effect.
