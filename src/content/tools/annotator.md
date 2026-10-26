@@ -11,7 +11,7 @@ tags: ["macos", "windows", "presentation", "screen-annotation", "productivity"]
 language: "Swift"
 license: "Apache-2.0"
 date_added: "2026-10-25"
-featured: false
+featured: true
 ---
 
 I explain things on video calls all day, and pointing with the mouse never felt like enough. So I built Annotator: a little floating toolbar that lets me circle the exact number, bend an arrow to the button I mean, highlight a line and zoom in, right on top of whatever app I'm showing. The marks look hand-drawn, stay on screen while I keep clicking in the app underneath, and I can move or restyle them later.

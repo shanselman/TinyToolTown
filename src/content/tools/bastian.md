@@ -11,7 +11,7 @@ language: "Rust"
 license: "MIT"
 theme: "minimal"
 date_added: "2026-10-25"
-featured: false
+featured: true
 ---
 
 Bastian finds the Markdown in a folder and lays it out for the terminal: fitted tables, highlighted code, clickable links, images, a table of contents, search and live reload. It also reads single documents from a file, stdin, a URL or a GitHub/GitLab repository, and can run a runbook's code blocks in place
