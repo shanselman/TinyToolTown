@@ -17,7 +17,7 @@
     "rehype-sanitize": "^6.0.0"
   },
   "optionalDependencies": {
-    "@rollup/rollup-win32-x64-msvc": "^4.65.1"
+    "@rollup/rollup-win32-x64-msvc": "^4.67.3"
   },
   "devDependencies": {
     "sharp": "^0.35.5",
