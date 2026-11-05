@@ -11,7 +11,7 @@ tags: ["youtube", "music", "privacy"]
 language: "HTML, JavaSkript,CSS"
 license: "MIT"
 date_added: "2026-11-01"
-featured: false
+featured: true
 ---
 
 TinyTube turns any YouTube URL int its shortest, cleanest form. Fast and simple. Watching a bloated URL transform into a minimalist link feels surprisingly satisfying.

@@ -11,7 +11,7 @@ language: "C#"
 license: "MIT"
 theme: "terminal"
 date_added: "2026-04-14"
-featured: true
+featured: false
 ai_summary: "Finally, click your Windows desktop wallpaper to instantly reveal your desktop—just like that slick macOS Sonoma trick—making window chaos vanish with a single tap! It’s the magical shortcut you never knew you needed for speedy desktop peeks."
 ai_features: ["👆 Click empty wallpaper or taskbar area to reveal desktop", "✨ Optional Fly Away animated window hiding mode", "🖱️ Tray toggles for double-click requirement and taskbar peek", "🚀 Lightweight, no install, and runs quietly in the system tray"]
 ---

@@ -1,14 +1,12 @@
 {
-  "lastRun": "2026-04-14",
+  "lastRun": "2026-11-04",
   "selectedSlugs": [
-    "peekdesktop",
-    "bluetoothwave",
-    "simple-icon-file-maker",
-    "tally",
-    "toasty",
-    "fancygist",
-    "3d-maze",
-    "textream"
+    "headtrack",
+    "tinytube",
+    "caption-checker",
+    "annotator",
+    "bastian",
+    "unlatch"
   ],
   "lastFeatured": {
     "peekdesktop": "2026-04-14",
@@ -18,6 +16,12 @@
     "toasty": "2026-04-14",
     "fancygist": "2026-04-14",
     "3d-maze": "2026-04-14",
-    "textream": "2026-04-14"
+    "textream": "2026-04-14",
+    "headtrack": "2026-11-04",
+    "tinytube": "2026-11-04",
+    "caption-checker": "2026-11-04",
+    "annotator": "2026-11-04",
+    "bastian": "2026-11-04",
+    "unlatch": "2026-11-04"
   }
 }
