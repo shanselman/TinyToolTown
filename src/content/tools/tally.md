@@ -10,7 +10,7 @@ tags: ["cli", "finance", "money", "budget"]
 language: "Python"
 license: "MIT"
 date_added: "2026-02-12"
-featured: true
+featured: false
 ai_summary: "A clever local rule engine that pairs with your favorite AI coding assistant to automatically categorize bank transactions — just tell Claude or Copilot to use tally and watch your messy CSV become a beautiful spending report."
 ai_features: ["🤖 Works seamlessly with Claude Code, Codex, Copilot, Cursor and any CLI agent", "📊 Generates HTML spending reports with tally up", "🔍 Discovers uncategorized transactions so you can teach it new rules", "📁 Simple folder-based budget structure you control locally"]
 ---
