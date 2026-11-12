@@ -9,7 +9,7 @@ tags: ["gpu", "terminal", "monitoring", "llm", "windows"]
 language: "Python"
 license: "MIT"
 date_added: "2026-11-12"
-featured: false
+featured: true
 ---
 
 GPU Task Manager is a cross-platform terminal tool that shows per-process GPU memory and activity instead of just one overall usage number. It can also provide extra context about local AI models and memory use, depending on the device and driver. I built it to answer the practical question “what is using my GPU?” when Task Manager only shows the total. It is an experimental, local tool; its available measurements depend on the platform and hardware.

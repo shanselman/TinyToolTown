@@ -10,7 +10,7 @@ language: "JavaScript, CSS"
 license: "MIT"
 theme: "sunset"
 date_added: "2026-11-09"
-featured: true
+featured: false
 ---
 
 Silly browser extension (Manifest V3) that fills your screen with CSS flames after you scroll past 10 posts on your LinkedIn feed. Prompts you to create a post instead of doomscrolling. Created to promote creation over consumption online.
