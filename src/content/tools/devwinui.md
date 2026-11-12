@@ -10,7 +10,7 @@ tags: ["windows", "winui", "developer", "dotnet", "desktop"]
 language: "C#"
 license: "MIT"
 date_added: "2026-05-06"
-featured: false
+featured: true
 ai_summary: "Supercharge your WinUI 3 apps with a treasure trove of handy classes, controls, and styles that make building Windows desktop experiences a breeze and keep your code Native AOT friendly!"
 ai_features: ["🔥 Native AOT compatible for blazing fast apps", "⚡ Rich collection of reusable UI controls and styles", "🎯 Comprehensive docs and samples galore", "🚀 Ready-made templates to kickstart your projects"]
 ---

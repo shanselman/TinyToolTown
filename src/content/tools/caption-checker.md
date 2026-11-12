@@ -11,7 +11,7 @@ tags: ["cli", "captions", "subtitles", "srt", "webvtt"]
 language: "JavaScript"
 license: "MIT"
 date_added: "2026-10-25"
-featured: true
+featured: false
 ---
 
 caption-checker reads an SRT or WebVTT file and tells you which captions break a published standard: Netflix English, the BBC subtitle guidelines or the DCMP Captioning Key. It flags captions that read too fast, lines that are too long, too many lines, captions on screen too briefly or too long, gaps under the minimum, overlaps and broken timestamps, with the caption number and timecode for each one.

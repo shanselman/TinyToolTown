@@ -9,7 +9,7 @@ tags: ["windows", "macos", "linux", "dotnet", "ide"]
 language: "C#"
 license: "MIT"
 date_added: "2026-04-18"
-featured: false
+featured: true
 ai_summary: "Dive into a sleek, modern playground for .NET developers that works across platforms and is built with the power of .NET and Godot—coding has never been this fun and fresh!"
 ai_features: ["🔥 Cross platform and open source goodness", "⚡ Smart code completions and signature help", "🎯 Built-in debugging and running tools", "🚀 Razor syntax highlighting for web wizards"]
 ---

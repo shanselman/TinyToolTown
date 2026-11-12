@@ -10,7 +10,7 @@ tags: ["macos", "audio", "spatial-audio", "headphones", "webcam"]
 language: "Swift"
 license: "GPL-3.0"
 date_added: "2026-11-01"
-featured: true
+featured: false
 ---
 
 On headphones, sound is glued to your head: turn left and the whole mix turns with you. AirPods fix this with motion sensors in the earbuds, but my ordinary headphones can't. HeadTrack does it with the webcam instead. It follows your head and keeps everything your Mac plays (music, YouTube, films, calls) anchored to the screen, like real speakers.
