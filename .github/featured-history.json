@@ -2,7 +2,7 @@
   "lastRun": "2026-11-12",
   "selectedSlugs": [
     "easi-run",
-    "linkedin-flame-scroller",
+    "gpu-task-manager",
     "devwinui",
     "hurl",
     "sharpide",
@@ -28,6 +28,7 @@
     "devwinui": "2026-11-12",
     "hurl": "2026-11-12",
     "sharpide": "2026-11-12",
-    "peon-ping": "2026-11-12"
+    "peon-ping": "2026-11-12",
+    "gpu-task-manager": "2026-11-12"
   }
 }
