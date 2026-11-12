@@ -1,12 +1,12 @@
 {
-  "lastRun": "2026-11-04",
+  "lastRun": "2026-11-12",
   "selectedSlugs": [
-    "headtrack",
-    "tinytube",
-    "caption-checker",
-    "annotator",
-    "bastian",
-    "unlatch"
+    "easi-run",
+    "linkedin-flame-scroller",
+    "devwinui",
+    "hurl",
+    "sharpide",
+    "peon-ping"
   ],
   "lastFeatured": {
     "peekdesktop": "2026-04-14",
@@ -22,6 +22,12 @@
     "caption-checker": "2026-11-04",
     "annotator": "2026-11-04",
     "bastian": "2026-11-04",
-    "unlatch": "2026-11-04"
+    "unlatch": "2026-11-04",
+    "easi-run": "2026-11-12",
+    "linkedin-flame-scroller": "2026-11-12",
+    "devwinui": "2026-11-12",
+    "hurl": "2026-11-12",
+    "sharpide": "2026-11-12",
+    "peon-ping": "2026-11-12"
   }
 }

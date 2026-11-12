@@ -9,7 +9,7 @@ website_url: "https://www.peonping.com/"
 tags: ["cli", "fun", "gamer"]
 license: "MIT"
 date_added: "2026-02-24"
-featured: false
+featured: true
 ai_summary: "Bring your AI coding buddy to life with epic game character voice lines and flashy visual alerts that grab your attention exactly when you need it—because who wants to miss a peon ping? It’s like having a mini RTS announcer cheering you on while you code!"
 ai_features: ["🎮 Iconic voice lines from Warcraft, StarCraft, Portal, Zelda and more", "🚀 Supports tons of AI coding agents like Claude Code and GitHub Copilot", "🖥️ Bold on-screen banners to keep notifications impossible to ignore", "🔧 Easy install with customizable sound packs and multi-IDE support"]
 ---

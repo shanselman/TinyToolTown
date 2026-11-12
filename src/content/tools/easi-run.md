@@ -11,7 +11,7 @@ tags: ["linux", "docker", "mcp", "automation", "browser"]
 language: "Rust"
 license: "AGPL-3.0-only"
 date_added: "2026-11-11"
-featured: false
+featured: true
 ---
 
 easi.run gives connected AI agents isolated Chrome sessions on a user's own server, exposed through MCP or REST. A person can watch live, take over for sign-ins, two-factor codes and approvals, then return control to the agent.
