@@ -23,6 +23,9 @@ jobs:
       actions: write
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Enough history to find recent `Imported-from:` trailers (see recovery below).
+          fetch-depth: 50
 
       - uses: actions/setup-node@v7
         with:
@@ -40,7 +43,7 @@ jobs:
             const path = require('path');
             const { execFileSync } = require('child_process');
             const sharp = require('sharp');
-            const { getField, normalizeRepoFromUrl } = require(`${process.env.GITHUB_WORKSPACE}/scripts/issue-form-parser.cjs`);
+            const { getField, normalizeRepoFromUrl, parseImportedIssueNumbers } = require(`${process.env.GITHUB_WORKSPACE}/scripts/issue-form-parser.cjs`);
 
             const owner = context.repo.owner;
             const repo = context.repo.repo;
@@ -227,6 +230,17 @@ jobs:
               }
             }
 
+            // Issues whose tool file was already pushed by an earlier run that
+            // crashed before closing them. They are finished, not re-imported.
+            let importLog = '';
+            try {
+              importLog = execFileSync('git', ['log', '--format=%B', '--grep=^Imported-from: #'], { encoding: 'utf-8' });
+            } catch (err) {
+              console.log(`Could not read import history: ${err.message}`);
+            }
+            const alreadyImported = parseImportedIssueNumbers(importLog);
+            const recovered = [];
+
             for (const issue of issues) {
               let writtenFilePath = null;
               let writtenThumbFile = null;
@@ -257,6 +271,16 @@ jobs:
 
                 const repoKey = normalizeRepoFromUrl(github_url);
                 if (repoKey && existingRepos.has(repoKey)) {
+                  if (alreadyImported.has(issue.number)) {
+                    recovered.push({
+                      issueNumber: issue.number,
+                      name: sanitize(name),
+                      slug: existingRepos.get(repoKey),
+                      authorGithub: sanitize(author_github).replace(/[^a-zA-Z0-9_-]/g, '').toLowerCase(),
+                    });
+                    console.log(`Recovered #${issue.number}: already imported, finishing close-out`);
+                    continue;
+                  }
                   throw new Error(`Duplicate: ${repoKey} is already listed as "${existingRepos.get(repoKey)}"`);
                 }
 
@@ -581,7 +605,7 @@ jobs:
 
               if (hasChanges) {
                 const commitTitle = `🏘️ Add ${processed.length} tool${processed.length === 1 ? '' : 's'} from import queue`;
-                execFileSync('git', ['commit', '-m', commitTitle]);
+                execFileSync('git', ['commit', '-m', commitTitle, '-m', processed.map((p) => `Imported-from: #${p.issueNumber}`).join('\n')]);
 
                 for (let attempt = 0; attempt < 5; attempt++) {
                   try {
@@ -602,35 +626,56 @@ jobs:
               }
             }
 
-            if (processed.length > 0 && pushed) {
+            // Everything below runs after the commit is on main, so nothing here
+            // may abort the run: each step is retried or isolated per issue, and
+            // the next run's recovery path finishes any issue left open.
+            const toCloseOut = [...(pushed ? processed : []), ...recovered];
+            if (toCloseOut.length > 0) {
               // Trigger deploy — GITHUB_TOKEN pushes don't trigger other workflows
-              await github.rest.actions.createWorkflowDispatch({
-                owner,
-                repo,
-                workflow_id: 'deploy.yml',
-                ref: 'main',
-              });
-              console.log('Triggered deploy workflow');
-
-              for (const item of processed) {
-                await github.rest.issues.createComment({
-                  owner,
-                  repo,
-                  issue_number: item.issueNumber,
-                  body: `🏘️ **Welcome to Tiny Tool Town!**\n\n**${item.name}** has been added and will be live once the site rebuilds:\n\n- Tool page: https://www.tinytooltown.com/tools/${item.slug}/\n- Author page: https://www.tinytooltown.com/authors/${item.authorGithub}/\n- Author RSS feed: https://www.tinytooltown.com/rss/authors/${item.authorGithub}.xml\n\nYour author page starts as an unclaimed automatic page. Want to claim/customize it? Open the **Claim or Customize an Author Page** issue form from your GitHub account: https://github.com/shanselman/TinyToolTown/issues/new?template=customize-author.yml&title=${encodeURIComponent(`[Author] @${item.authorGithub}`)}`,
-                });
-                await github.rest.issues.update({
-                  owner,
-                  repo,
-                  issue_number: item.issueNumber,
-                  state: 'closed',
-                });
-                await removeLabelIfExists(item.issueNumber, 'queued-import');
-                // A submission that failed an earlier run and was later fixed
-                // would otherwise stay branded import-failed forever.
-                await removeLabelIfExists(item.issueNumber, 'import-failed');
+              for (let attempt = 1; attempt <= 3; attempt++) {
+                try {
+                  await github.rest.actions.createWorkflowDispatch({
+                    owner,
+                    repo,
+                    workflow_id: 'deploy.yml',
+                    ref: 'main',
+                  });
+                  console.log('Triggered deploy workflow');
+                  break;
+                } catch (err) {
+                  console.log(`Deploy dispatch attempt ${attempt} failed: ${err.message}`);
+                  if (attempt === 3) {
+                    core.warning('Could not trigger deploy.yml; the site will update on the next deploy.');
+                  } else {
+                    sleep(attempt * 5000);
+                  }
+                }
               }
-            } else if (processed.length > 0 && !pushed) {
+
+              for (const item of toCloseOut) {
+                try {
+                  await github.rest.issues.createComment({
+                    owner,
+                    repo,
+                    issue_number: item.issueNumber,
+                    body: `🏘️ **Welcome to Tiny Tool Town!**\n\n**${item.name}** has been added and will be live once the site rebuilds:\n\n- Tool page: https://www.tinytooltown.com/tools/${item.slug}/\n- Author page: https://www.tinytooltown.com/authors/${item.authorGithub}/\n- Author RSS feed: https://www.tinytooltown.com/rss/authors/${item.authorGithub}.xml\n\nYour author page starts as an unclaimed automatic page. Want to claim/customize it? Open the **Claim or Customize an Author Page** issue form from your GitHub account: https://github.com/shanselman/TinyToolTown/issues/new?template=customize-author.yml&title=${encodeURIComponent(`[Author] @${item.authorGithub}`)}`,
+                  });
+                  await github.rest.issues.update({
+                    owner,
+                    repo,
+                    issue_number: item.issueNumber,
+                    state: 'closed',
+                  });
+                  await removeLabelIfExists(item.issueNumber, 'queued-import');
+                  // A submission that failed an earlier run and was later fixed
+                  // would otherwise stay branded import-failed forever.
+                  await removeLabelIfExists(item.issueNumber, 'import-failed');
+                } catch (err) {
+                  core.warning(`Close-out for #${item.issueNumber} failed (${err.message}); the next run will retry it.`);
+                }
+              }
+            }
+            if (processed.length > 0 && !pushed) {
               for (const item of processed) {
                 await markFailed(item.issueNumber, 'Git push failed after retries', false);
               }

@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { getField, parseToolSubmission, normalizeRepoFromUrl } = require('../../../scripts/issue-form-parser.cjs');
+const { getField, parseToolSubmission, normalizeRepoFromUrl, parseImportedIssueNumbers } = require('../../../scripts/issue-form-parser.cjs');
 
 // A realistic GitHub issue-form body as posted by the submit-tool template.
 const REAL_BODY = `### Tool Name
@@ -194,6 +194,28 @@ describe('normalizeRepoFromUrl', () => {
     expect(normalizeRepoFromUrl('')).toBeNull();
     expect(normalizeRepoFromUrl('https://example.com/owner/repo')).toBeNull();
     expect(normalizeRepoFromUrl('not a url')).toBeNull();
+  });
+});
+
+describe('parseImportedIssueNumbers', () => {
+  it('reads Imported-from trailers across import commit messages', () => {
+    const log = [
+      '🏘️ Add 2 tools from import queue',
+      '',
+      'Imported-from: #928',
+      'Imported-from: #926',
+      '',
+      '🏘️ Add 1 tool from import queue',
+      '',
+      'Imported-from: #914',
+    ].join('\n');
+    expect([...parseImportedIssueNumbers(log)].sort()).toEqual([914, 926, 928]);
+  });
+
+  it('ignores issue references that are not trailers', () => {
+    expect(parseImportedIssueNumbers('Add claimed author page (closes #919)').size).toBe(0);
+    expect(parseImportedIssueNumbers('See Imported-from: #12 in prose').size).toBe(0);
+    expect(parseImportedIssueNumbers('').size).toBe(0);
   });
 });
 

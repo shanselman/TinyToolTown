@@ -94,10 +94,22 @@ function normalizeRepoFromUrl(url) {
   return `${owner}/${repo}`;
 }
 
+// Import commits carry one `Imported-from: #123` trailer per issue. Returns the
+// set of issue numbers already committed, so a run that pushed but crashed
+// before closing its issues can be finished by the next run.
+function parseImportedIssueNumbers(text) {
+  const numbers = new Set();
+  for (const match of String(text || '').matchAll(/^Imported-from: #(\d+)\s*$/gm)) {
+    numbers.add(Number(match[1]));
+  }
+  return numbers;
+}
+
 module.exports = {
   getField,
   parseToolSubmission,
   normalizeRepoFromUrl,
+  parseImportedIssueNumbers,
   FIELD_LABELS,
   FIELD_LABEL_ALIASES,
 };
