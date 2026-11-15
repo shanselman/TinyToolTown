@@ -73,7 +73,7 @@ Description in markdown body.
 - `deploy.yml` — Builds and deploys to GitHub Pages on push to `main`. Refreshes star counts and generates social cards before building.
 - `triage-tool.yml` — On new/edited submission issues: runs automated checks, detects duplicates, and applies triage labels.
 - `approve-tool.yml` — Triggered when an issue is labeled `approved`. Adds `queued-import` and dispatches the batch importer.
-- `batch-approve.yml` — Processes the `queued-import` queue: parses issues (shared parser), refuses duplicates, writes tool `.md` files, fetches thumbnails, generates social cards, commits to `main`, and triggers a deploy. Runs on the `approved`-label dispatch with an hourly scheduled fallback.
+- `batch-approve.yml` — Processes the `queued-import` queue: parses issues (shared parser), refuses duplicates, writes tool `.md` files, fetches thumbnails, generates social cards, commits to `main`, and triggers a deploy. Runs on the `approved`-label dispatch with an hourly scheduled fallback. Import commits carry `Imported-from: #N` trailers; after the push, deploy dispatch and per-issue close-out never abort the run, and the next run finishes any queued issue whose trailer is already on `main` instead of flagging it as a duplicate.
 - `generate-summaries.yml` — Generates AI summaries/features for tools (prompt-injection hardened).
 - `refresh-thumbnails.yml` — Re-fetches thumbnails from READMEs and regenerates affected social cards.
 - `refresh-stars.yml` — Refreshes the GitHub star-count cache and redeploys.
