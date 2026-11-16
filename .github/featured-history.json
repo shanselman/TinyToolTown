@@ -1,22 +1,22 @@
 {
-  "lastRun": "2026-11-12",
+  "lastRun": "2026-11-16",
   "selectedSlugs": [
-    "easi-run",
-    "gpu-task-manager",
-    "devwinui",
-    "hurl",
-    "sharpide",
-    "peon-ping"
+    "psrpm",
+    "brass-lantern",
+    "peekdesktop",
+    "rackpeek",
+    "smaug",
+    "textream"
   ],
   "lastFeatured": {
-    "peekdesktop": "2026-04-14",
+    "peekdesktop": "2026-11-16",
     "bluetoothwave": "2026-04-14",
     "simple-icon-file-maker": "2026-04-14",
     "tally": "2026-04-14",
     "toasty": "2026-04-14",
     "fancygist": "2026-04-14",
     "3d-maze": "2026-04-14",
-    "textream": "2026-04-14",
+    "textream": "2026-11-16",
     "headtrack": "2026-11-04",
     "tinytube": "2026-11-04",
     "caption-checker": "2026-11-04",
@@ -29,6 +29,10 @@
     "hurl": "2026-11-12",
     "sharpide": "2026-11-12",
     "peon-ping": "2026-11-12",
-    "gpu-task-manager": "2026-11-12"
+    "gpu-task-manager": "2026-11-12",
+    "psrpm": "2026-11-16",
+    "brass-lantern": "2026-11-16",
+    "rackpeek": "2026-11-16",
+    "smaug": "2026-11-16"
   }
 }

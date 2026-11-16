@@ -10,7 +10,7 @@ tags: ["windows", "sysadmin", "process-manager", "winrm", "monitoring"]
 language: "PowerShell"
 license: "MIT"
 date_added: "2026-11-16"
-featured: false
+featured: true
 ---
 
 PSRPM (PowerShell Remote Process Manager) brings a Sysinternals Process Explorer-style hierarchical process tree, TCPView-style socket inspection, Windows Services control, and Handle/DLL search to both local machines and remote Windows servers over a single persistent WinRM `PSSession`.
