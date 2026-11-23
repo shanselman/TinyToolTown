@@ -1,15 +1,15 @@
 {
-  "lastRun": "2026-11-12",
+  "lastRun": "2026-11-23",
   "selectedSlugs": [
-    "easi-run",
-    "gpu-task-manager",
-    "devwinui",
-    "hurl",
-    "sharpide",
-    "peon-ping"
+    "fast-git-diff-viewer",
+    "github-town",
+    "peekdesktop",
+    "rackpeek",
+    "smaug",
+    "ambie-white-noise"
   ],
   "lastFeatured": {
-    "peekdesktop": "2026-04-14",
+    "peekdesktop": "2026-11-23",
     "bluetoothwave": "2026-04-14",
     "simple-icon-file-maker": "2026-04-14",
     "tally": "2026-04-14",
@@ -29,6 +29,11 @@
     "hurl": "2026-11-12",
     "sharpide": "2026-11-12",
     "peon-ping": "2026-11-12",
-    "gpu-task-manager": "2026-11-12"
+    "gpu-task-manager": "2026-11-12",
+    "fast-git-diff-viewer": "2026-11-23",
+    "github-town": "2026-11-23",
+    "rackpeek": "2026-11-23",
+    "smaug": "2026-11-23",
+    "ambie-white-noise": "2026-11-23"
   }
 }

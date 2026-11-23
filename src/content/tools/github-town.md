@@ -11,7 +11,7 @@ tags: ["github", "visualization", "3d", "web", "fun"]
 language: "TypeScript"
 license: "Apache-2.0"
 date_added: "2026-11-20"
-featured: false
+featured: true
 ---
 
 GitHub Town turns a user's repositories into a 3D town you can explore. Active projects light up, older repositories fade into a foggy ghost town, and archived repositories become gravestones. Building height reflects stars, while color reflects the primary language. It is a playful way to explore a GitHub profile and revisit forgotten projects.

@@ -8,7 +8,7 @@ thumbnail: "/thumbnails/fast-git-diff-viewer.webp"
 tags: ["git", "windows"]
 language: "C"
 date_added: "2026-11-20"
-featured: false
+featured: true
 ---
 
 A very low-memory, fast git diff viewer for Windows, written in plain C against Win32 and GDI. One small exe, no runtime, no installer. Leave it open beside your editor or a coding agent and watch changes arrive.
